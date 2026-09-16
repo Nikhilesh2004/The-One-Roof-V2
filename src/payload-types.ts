@@ -70,7 +70,6 @@ export interface Config {
     products: Product;
     categories: Category;
     media: Media;
-    'photo-drafts': PhotoDraft;
     policies: Policy;
     users: User;
     'payload-kv': PayloadKv;
@@ -83,7 +82,6 @@ export interface Config {
     products: ProductsSelect<false> | ProductsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    'photo-drafts': PhotoDraftsSelect<false> | PhotoDraftsSelect<true>;
     policies: PoliciesSelect<false> | PoliciesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -142,7 +140,7 @@ export interface Product {
    */
   title: string;
   /**
-   * Drag photos in, or send them from a phone in the Photo studio. The first is the main picture — drag to reorder. Needed before this can go live, not before it can be saved.
+   * Drag photos in. The first is the main picture — drag to reorder. Needed before this can go live, not before it can be saved.
    */
   photos?: (number | Media)[] | null;
   /**
@@ -314,48 +312,6 @@ export interface Category {
   createdAt: string;
 }
 /**
- * Photos sent from a phone, waiting to be checked and attached to a product.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "photo-drafts".
- */
-export interface PhotoDraft {
-  id: number;
-  /**
-   * Typed on the phone while the product is in hand. The tablet pre-fills the product name from this, so nobody has to work out later what the photo was of.
-   */
-  suggestedName?: string | null;
-  /**
-   * Optional. If the person shooting knows, it saves picking it again on the tablet.
-   */
-  suggestedProduct?: (number | null) | Product;
-  /**
-   * Anything the tablet should know — "back view", "damaged corner".
-   */
-  note?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    preview?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-/**
  * Terms, privacy, returns and the compliance disclosures. Read these before the shop takes its first order.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -460,10 +416,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
-      } | null)
-    | ({
-        relationTo: 'photo-drafts';
-        value: number | PhotoDraft;
       } | null)
     | ({
         relationTo: 'policies';
@@ -606,40 +558,6 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
         full?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-      };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "photo-drafts_select".
- */
-export interface PhotoDraftsSelect<T extends boolean = true> {
-  suggestedName?: T;
-  suggestedProduct?: T;
-  note?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-  sizes?:
-    | T
-    | {
-        preview?:
           | T
           | {
               url?: T;

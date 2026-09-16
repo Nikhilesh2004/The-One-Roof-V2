@@ -1,173 +1,121 @@
 /* ───────────────────────────────────────────────────────────────────
    The One Roof — admin theme
 
-   Payload builds every surface from one neutral ramp, --color-base-0
-   (page) through --color-base-1000 (text), and derives --theme-elevation-*
-   from it. So the whole panel can be rebranded by replacing the ramp
-   rather than by chasing individual components: tint the greys towards the
-   storefront's navy in dark mode and its paper in light, then spend the
-   accent — brass — only where something is actionable.
+   Two rules govern everything here, and breaking either one produces
+   light panels floating on a dark page:
 
-   Palette is lifted from (frontend)/styles.css so the CMS and the shop
-   cannot drift apart.
+   1. --color-base-0..1000 is ONE light-to-dark ramp, declared once.
+      Payload's dark theme inverts it itself — in dark mode
+      --theme-elevation-0 resolves to --color-base-900, and
+      --theme-elevation-1000 to --color-base-0. Redefining the ramp per
+      theme double-inverts it.
+
+   2. Component styles use --theme-elevation-*, never --color-base-*.
+      Elevation is theme-aware; base is raw. elevation-0 is the page,
+      50/100 are raised surfaces, 150 is a border, 500 is muted text,
+      1000 is body text — and each flips correctly between themes.
+
+   The dark end of the ramp is the storefront's own palette, so the CMS
+   and the shop read as one product: base-900 is --surface (#0e1016),
+   850 is --surface-2, 800 is --panel.
    ─────────────────────────────────────────────────────────────────── */
 
-html[data-theme='dark'] {
-  --brand-brass: #e0b45f;
-  --brand-brass-deep: #8a6019;
-  --brand-on-brass: #1a1305;
+:root {
+  --color-base-0: #f8f9fc;
+  --color-base-50: #eef0f5;
+  --color-base-100: #e0e4ec;
+  --color-base-150: #cfd4e0;
+  --color-base-200: #bcc3d2;
+  --color-base-250: #aab2c4;
+  --color-base-300: #98a1b5;
+  --color-base-350: #8690a6;
+  --color-base-400: #757f97;
+  --color-base-450: #667088;
+  --color-base-500: #586278;
+  --color-base-550: #4b546a;
+  --color-base-600: #3f485c;
+  --color-base-650: #343c4f;
+  --color-base-700: #2b3142;
+  --color-base-750: #232838;
+  --color-base-800: #1b1f2b;
+  --color-base-850: #151822;
+  --color-base-900: #0e1016;
+  --color-base-950: #0a0c10;
+  --color-base-1000: #06070a;
 
-  /* Navy-tinted ramp. 0 is the page, 1000 is the type. */
-  --color-base-0: #0e1016;
-  --color-base-50: #151822;
-  --color-base-100: #1b1f2b;
-  --color-base-150: #232838;
-  --color-base-200: #2b3142;
-  --color-base-250: #333a4d;
-  --color-base-300: #3c4458;
-  --color-base-350: #454e63;
-  --color-base-400: #4f596f;
-  --color-base-450: #5a647b;
-  --color-base-500: #656f87;
-  --color-base-550: #717b93;
-  --color-base-600: #7d879f;
-  --color-base-650: #8a93aa;
-  --color-base-700: #979fb5;
-  --color-base-750: #a5acc0;
-  --color-base-800: #b4bacb;
-  --color-base-850: #c4c9d7;
-  --color-base-900: #d6d9e3;
-  --color-base-950: #e8eaf0;
-  --color-base-1000: #f4f1ea;
-
-  --theme-bg: var(--color-base-0);
-  --theme-text: var(--color-base-1000);
-  --theme-border-color: rgba(255, 255, 255, 0.09);
-}
-
-html[data-theme='light'] {
   --brand-brass: #8a6019;
-  --brand-brass-deep: #6d4b12;
   --brand-on-brass: #fffaf0;
-
-  /* The shop's paper tones, warm rather than blue-grey. */
-  --color-base-0: #faf7f0;
-  --color-base-50: #f2ede2;
-  --color-base-100: #ede7da;
-  --color-base-150: #e4dccb;
-  --color-base-200: #d9d0bd;
-  --color-base-250: #cabfa9;
-  --color-base-300: #b9ad95;
-  --color-base-350: #a89b82;
-  --color-base-400: #968970;
-  --color-base-450: #857861;
-  --color-base-500: #756853;
-  --color-base-550: #665a47;
-  --color-base-600: #584d3c;
-  --color-base-650: #4c4234;
-  --color-base-700: #41382c;
-  --color-base-750: #372f25;
-  --color-base-800: #2e271e;
-  --color-base-850: #262018;
-  --color-base-900: #1f1a13;
-  --color-base-950: #1a150f;
-  --color-base-1000: #17140f;
-
-  --theme-bg: var(--color-base-0);
-  --theme-text: var(--color-base-1000);
-  --theme-border-color: rgba(23, 20, 15, 0.11);
 }
 
-/* ── Accent ──────────────────────────────────────────────────────────
-   Brass means "this does something". Payload's default primary is the
-   text colour, which makes Save look like a paragraph.                */
+html[data-theme='dark'] {
+  /* Brass has to lift off a dark page, so the light-mode brass is too deep. */
+  --brand-brass: #e0b45f;
+  --brand-on-brass: #1a1305;
+}
+
+/* ── Accent ─────────────────────────────────────────────────────────
+   Brass means "this does something". Payload's default primary button is
+   the text colour, which makes Save look like a paragraph.             */
 
 .btn--style-primary {
   --btn-color: var(--brand-on-brass);
   background-color: var(--brand-brass);
   border-color: var(--brand-brass);
+  color: var(--brand-on-brass);
 
   &:hover:not(:disabled),
   &:focus-visible:not(:disabled) {
-    background-color: var(--brand-brass-deep);
-    border-color: var(--brand-brass-deep);
+    background-color: var(--brand-brass);
+    border-color: var(--brand-brass);
     color: var(--brand-on-brass);
+    filter: brightness(1.08);
   }
 }
 
-.btn--style-secondary:hover:not(:disabled) {
-  border-color: var(--brand-brass);
-  color: var(--brand-brass);
-}
-
-/* One consistent focus ring, brass, on everything that takes focus. */
 *:focus-visible {
   outline: 2px solid var(--brand-brass);
   outline-offset: 2px;
 }
 
-a:not(.btn) {
-  color: var(--brand-brass);
-  text-underline-offset: 2px;
-}
-
 /* ── Navigation ─────────────────────────────────────────────────────
-   The active collection is marked with a brass rule rather than a fill,
-   so the sidebar stays quiet while still saying where you are.        */
-
-.nav {
-  background-color: var(--color-base-50);
-  border-right: 1px solid var(--theme-border-color);
-}
+   The active collection gets a brass rule rather than a fill, so the
+   sidebar stays quiet while still saying where you are.                */
 
 .nav__link {
   border-left: 2px solid transparent;
-  border-radius: 0 4px 4px 0;
   transition: background-color 0.15s ease, border-color 0.15s ease;
 
   &:hover {
-    background-color: var(--color-base-100);
+    background-color: var(--theme-elevation-50);
   }
 
-  &.active,
-  &[aria-current='page'] {
-    background-color: var(--color-base-100);
+  &.active {
+    background-color: var(--theme-elevation-50);
     border-left-color: var(--brand-brass);
     color: var(--brand-brass);
   }
 }
 
 /* ── Lists ──────────────────────────────────────────────────────────
-   A product catalogue is scanned, not read. Taller rows, a clear header,
-   and a hover state so the eye can track across a wide table.          */
+   A catalogue is scanned, not read: a quiet header and a hover row so
+   the eye can track across a wide table.                               */
 
 .table {
-  table {
-    border-collapse: separate;
-    border-spacing: 0;
-  }
-
   thead th {
-    background-color: var(--color-base-50);
-    border-bottom: 1px solid var(--theme-border-color);
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--color-base-600);
-    position: sticky;
-    top: 0;
-    z-index: 2;
+    color: var(--theme-elevation-500);
   }
 
   tbody td {
-    border-bottom: 1px solid var(--theme-border-color);
-    padding-block: 0.65rem;
+    padding-block: 0.6rem;
     vertical-align: middle;
   }
 
   tbody tr:hover td {
-    background-color: var(--color-base-50);
+    background-color: var(--theme-elevation-50);
   }
 }
 
@@ -181,13 +129,13 @@ a:not(.btn) {
 
 .tor-thumb {
   position: relative;
-  width: 44px;
-  height: 56px;
+  width: 42px;
+  height: 54px;
   flex: none;
   overflow: hidden;
   border-radius: 4px;
-  background-color: var(--color-base-100);
-  border: 1px solid var(--theme-border-color);
+  background-color: var(--theme-elevation-100);
+  border: 1px solid var(--theme-elevation-150);
 
   img {
     width: 100%;
@@ -197,61 +145,23 @@ a:not(.btn) {
   }
 }
 
-.tor-thumb--more {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--color-base-600);
-}
-
+.tor-thumb--more,
 .tor-thumb--empty {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
-  color: var(--color-base-400);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--theme-elevation-500);
+}
+
+.tor-thumb--empty {
   border-style: dashed;
 }
 
-/* ── Inputs ─────────────────────────────────────────────────────── */
-
-.field-type input[type='text'],
-.field-type input[type='number'],
-.field-type input[type='email'],
-.field-type input[type='password'],
-.field-type textarea {
-  background-color: var(--color-base-50);
-  border-color: var(--theme-border-color);
-  border-radius: 5px;
-
-  &:focus {
-    border-color: var(--brand-brass);
-  }
-}
-
-.field-label {
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-
-/* ── Login ──────────────────────────────────────────────────────── */
-
-.login {
-  &__brand,
-  .graphic-logo {
-    margin-bottom: 1.5rem;
-  }
-
-  .form-submit .btn {
-    width: 100%;
-  }
-}
-
 /* ── Dashboard ──────────────────────────────────────────────────────
-   Six numbers, the ones that change daily. Warnings earn a brass rule
-   only when the number is non-zero, so a healthy shop is a calm screen. */
+   Six numbers, the ones that change daily. A warning earns colour only
+   when it is non-zero, so a healthy shop is a calm screen.             */
 
 .tor-dash {
   margin-block-end: 2rem;
@@ -266,12 +176,13 @@ a:not(.btn) {
   font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: -0.01em;
+  color: var(--theme-elevation-1000);
 }
 
 .tor-dash__sub {
   margin: 0;
-  color: var(--color-base-600);
   font-size: 0.85rem;
+  color: var(--theme-elevation-500);
 }
 
 .tor-stats {
@@ -286,15 +197,15 @@ a:not(.btn) {
   gap: 0.1rem;
   padding: 0.9rem 1rem;
   border-radius: 7px;
-  background-color: var(--color-base-50);
-  border: 1px solid var(--theme-border-color);
-  border-top: 2px solid transparent;
+  background-color: var(--theme-elevation-50);
+  border: 1px solid var(--theme-elevation-150);
+  border-top: 2px solid var(--theme-elevation-150);
   text-decoration: none;
-  color: inherit;
+  color: var(--theme-elevation-1000);
   transition: background-color 0.15s ease, transform 0.15s ease;
 
   &:hover {
-    background-color: var(--color-base-100);
+    background-color: var(--theme-elevation-100);
     transform: translateY(-1px);
     text-decoration: none;
   }
@@ -315,7 +226,7 @@ a:not(.btn) {
 
 .tor-stat__note {
   font-size: 0.72rem;
-  color: var(--color-base-550);
+  color: var(--theme-elevation-500);
 }
 
 .tor-stat--brass {
@@ -328,6 +239,6 @@ a:not(.btn) {
   .tor-stat__value { color: #d08a3c; }
 }
 
-.tor-stat--quiet {
-  .tor-stat__value { color: var(--color-base-600); }
+.tor-stat--quiet .tor-stat__value {
+  color: var(--theme-elevation-500);
 }
