@@ -74,6 +74,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const shots: Shot[] = photosOf(product)
     .map((photo) => ({
       url: imageUrl(photo, 'full') ?? '',
+      thumbUrl: imageUrl(photo, 'thumb') ?? undefined,
       alt: imageAlt(photo, product.title),
     }))
     .filter((s) => s.url)

@@ -5,7 +5,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import { CloseIcon } from './Icons'
 
-export type Shot = { url: string; alt: string }
+/**
+ * `url` is the 1600px `full` size, shown in the frame and full screen.
+ * `thumbUrl` is the 400px `thumb`, for the strip of 64px buttons — without it
+ * each button downloads a 1600px photo to paint a thumbnail, which the image
+ * optimiser used to hide and no longer does.
+ */
+export type Shot = { url: string; thumbUrl?: string; alt: string }
 
 function Chevron({ dir }: { dir: 'left' | 'right' }) {
   return (
@@ -164,7 +170,7 @@ export function Gallery({ shots }: { shots: Shot[] }) {
                     : 'ring-1 ring-[var(--line)] hover:ring-[var(--line-2)]'
                 }`}
               >
-                <Image src={s.url} alt="" fill sizes="64px" className="object-cover" />
+                <Image src={s.thumbUrl || s.url} alt="" fill sizes="64px" className="object-cover" />
               </button>
             ))}
           </div>

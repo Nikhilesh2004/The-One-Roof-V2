@@ -110,6 +110,17 @@ export function ShortsRail({ items, speed }: { items: ShortCard[]; speed?: numbe
     let frame = 0
     let last = performance.now()
     let release = 0
+    /*
+     * The sub-pixel remainder, kept here rather than in scrollLeft.
+     *
+     * At 11px/s a 60Hz frame is worth 0.18px, and scrollLeft rounds a
+     * fractional write away on engines that keep scroll offsets whole —
+     * mobile among them. Adding 0.18 sixty times a second then landed on
+     * zero sixty times a second and the rail never moved, while a desktop
+     * engine that stores fractions drifted normally. Accumulating here and
+     * writing whole pixels behaves the same either way.
+     */
+    let carry = 0
 
     const held = () => Date.now() < release
 
@@ -122,7 +133,16 @@ export function ShortsRail({ items, speed }: { items: ShortCard[]; speed?: numbe
       const half = inner.getBoundingClientRect().width / 2
       if (half > 0) {
         if (!held() && !document.hidden && !stillness.matches) {
-          outer.scrollLeft += (SPEED * dt) / 1000
+          carry += (SPEED * dt) / 1000
+          const whole = Math.trunc(carry)
+          if (whole >= 1) {
+            outer.scrollLeft += whole
+            carry -= whole
+          }
+        } else {
+          // A finger owns the rail now; a stale remainder would nudge it on
+          // release.
+          carry = 0
         }
         // Wrap only between gestures: doing it mid-swipe would cut the
         // momentum short under the finger.
