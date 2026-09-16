@@ -1,0 +1,11 @@
+# Secrets live in Vercel's own environment settings, never in the upload.
+.env
+.env.*
+
+# Rebuilt on Vercel.
+node_modules
+.next
+
+# Local-only artefacts.
+media
+*.log

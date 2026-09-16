@@ -1,0 +1,81 @@
+{
+  "name": "theoneroof-v2",
+  "version": "1.0.0",
+  "description": "The One Roof — storefront and product manager",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=--no-deprecation PAYLOAD_DB_PUSH=true next dev",
+    "devsafe": "rm -rf .next && cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=--no-deprecation PAYLOAD_DB_PUSH=true next dev",
+    "build": "cross-env DATABASE_SESSION_MODE=true DATABASE_POOL_MAX=2 NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" payload migrate && cross-env DATABASE_SESSION_MODE=true DATABASE_POOL_MAX=2 NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" payload generate:importmap && cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
+    "build:docker": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" payload generate:importmap && cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
+    "build:local": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
+    "generate:types": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=--no-deprecation payload generate:types",
+    "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
+    "payload": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=--no-deprecation payload",
+    "migrate": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=--no-deprecation payload migrate",
+    "migrate:create": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=--no-deprecation payload migrate:create",
+    "migrate:status": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=--no-deprecation payload migrate:status",
+    "migrate:baseline": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx scripts/baseline-migrations.ts",
+    "create-admin": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx scripts/create-admin.ts",
+    "seed": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx scripts/seed-settings.ts",
+    "seed:sections": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx scripts/seed-sections.ts",
+    "seed:policies": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx scripts/seed-policies.ts",
+    "backfill:status": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx scripts/backfill-status.ts",
+    "refresh:photos": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx scripts/refresh-photos.ts",
+    "import:v1": "cross-env DATABASE_SESSION_MODE=true NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx scripts/migrate-from-v1.ts",
+    "media:upload": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx scripts/upload-media-to-s3.ts",
+    "check:pooler": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx scripts/check-pooler.ts",
+    "deploy": "node scripts/deploy.mjs"
+  },
+  "dependencies": {
+    "@payloadcms/db-postgres": "3.88.0",
+    "@payloadcms/next": "3.88.0",
+    "@payloadcms/richtext-lexical": "3.88.0",
+    "@payloadcms/storage-s3": "^3.88.0",
+    "@payloadcms/ui": "3.88.0",
+    "@tailwindcss/postcss": "^4.3.3",
+    "cross-env": "^7.0.3",
+    "dotenv": "16.4.7",
+    "graphql": "^16.8.1",
+    "next": "16.3.3",
+    "payload": "3.88.0",
+    "postcss": "^8.5.28",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "server-only": "^0.0.1",
+    "sharp": "0.34.2",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.9",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "eslint": "^9.16.0",
+    "eslint-config-next": "16.3.3",
+    "prettier": "^3.4.2",
+    "tsx": "4.22.4",
+    "typescript": "5.7.3"
+  },
+  "engines": {
+    "node": "^18.20.2 || >=20.9.0",
+    "pnpm": "^9 || ^10 || ^11"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp",
+      "esbuild",
+      "unrs-resolver"
+    ]
+  },
+  "allowScripts": {
+    "sharp@0.35.4": true,
+    "sharp@0.34.2": true,
+    "esbuild@0.18.20": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true,
+    "unrs-resolver@1.12.2": true
+  }
+}

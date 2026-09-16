@@ -1,0 +1,202 @@
+# The One Roof — v2
+
+The rebuilt storefront for **theoneroof.co**. A Next.js app with a real CMS
+behind it, replacing the three single-file HTML pages of v1.
+
+The v1 site in `../theoneroof-storefront` is untouched and stays live the
+whole time this is being built.
+
+---
+
+## What changed from v1, and why
+
+| v1 | v2 |
+| --- | --- |
+| One 720 KB HTML file per theme, catalogue fetched from Supabase at runtime | Next.js pages, rendered on the server, cached for 60s |
+| Clicking a product swapped a hidden `<section>` — no URL change, no scroll, no back button | `/product/<slug>` is a real page with its own title, share link and back button |
+| Editing through a hand-rolled panel behind a hidden icon | Payload CMS at `/admin` |
+| Bag ended in a dead "Checkout — UPI, cards, COD" button | Bag ends in **Enquire on WhatsApp**, with every line item in the message |
+| Shorts rail had two auto-scroll implementations, and the touch one stalled whenever the track was narrower than the screen | One implementation, repeats the track until it is wider than the screen, works at any product count |
+| Search and Account icons with no handler behind them | Search works; there is no Account, because there are no customer accounts |
+
+**There is no payment integration, by decision.** Payment pages are trivial
+to imitate, and a customer phished on a fake checkout loses real money. The
+bag becomes a WhatsApp message; the shop confirms the total; payment happens
+at the shop or on delivery.
+
+---
+
+## Getting it running
+
+```bash
+cp .env.example .env     # then fill in the four values it asks for
+npm install
+npm run dev
+```
+
+- Storefront → http://localhost:3000
+- Product manager → http://localhost:3000/admin
+
+There is one account and no sign-up screen. Put `ADMIN_EMAIL` and
+`ADMIN_PASSWORD` in `.env`, then:
+
+```bash
+npm run create-admin
+```
+
+Run it again any time to change the password.
+
+### First-time setup
+
+```bash
+npm run seed            # shop settings and the starting FAQ set
+npm run seed:sections   # the eight shop sections
+npm run seed:policies   # terms, privacy, returns, the two compliance pages
+npm run import:v1       # the 25 products and photos from the live v1 site
+```
+
+All four are safe to run more than once — they match on slug and update
+rather than duplicating. Each v1 product `id` becomes the v2 `slug`
+unchanged, so every product link already shared on WhatsApp still resolves
+after the switch.
+
+---
+
+## Using the product manager
+
+Everything the shop touches week to week is on the **first tab** of a
+product: name, photos, selling price, MRP, how many are left, section,
+description.
+
+- **Adding a product** — Products → Create new. Drag photos straight in; the
+  first is the main picture. Payload makes the thumbnails.
+- **Changing stock** — open the product, change *How many are left*. At 0 it
+  shows as sold out and stays on the site.
+- **The Shorts row** — tick *Show in Shoppable Shorts* in the sidebar. Four
+  to eight products keeps that row moving well.
+- **Phone number, address, hours, home page words, delivery charge, FAQs** —
+  all under **Shop settings**. Nothing needs a code change.
+- **Label details** (country of origin, manufacturer) are on the second tab.
+  Read them off the tag rather than guessing — a wrong country of origin is
+  a legal problem, and it is the one field v1 got wrong.
+
+Changes appear on the storefront within a minute.
+
+---
+
+## Photographing stock
+
+Two screens, two devices, one account signed in on both.
+
+**On the phone, in the shop — Admin → 1 · Take photos**
+
+Type what the thing is while it is still in your hand, photograph it, send.
+That is the whole job. No price, no section, no decisions about cropping.
+
+**On the tablet — Admin → 2 · Review & name**
+
+Photos appear on their own within a few seconds, already auto-edited. Tick
+the ones belonging to one product; the name typed at the shop is filled in
+for you. Add a price and section if you know them, and save. It becomes a
+**draft** — nothing reaches the website until you set it to Live.
+
+Each photo is straightened (phone photos carry their rotation in EXIF),
+levelled, and cropped to 4:5 so the catalogue grid lines up. Photos shot in
+portrait mode against the shop shelves keep that background; nothing here
+invents detail or replaces it. A listing has to show the thing a customer
+will actually receive.
+
+Photos are shrunk in the browser before upload, so four 7MB phone photos do
+not travel at full size on shop wifi. The saved file is processed again at
+full resolution — the preview is only a preview.
+
+**Then, back at the office — Admin → 3 · Finish drafts**
+
+Add the descriptions, check the label details, set each one to Live.
+
+---
+
+## Layout
+
+```
+src/
+  app/(frontend)/     the storefront
+    page.tsx            home
+    shop/               catalogue, and one page per section
+    product/[slug]/     the product page
+    search/             search results
+  app/(payload)/      the admin, generated by Payload
+    policies/           terms, privacy and the compliance pages
+  app/(payload)/      the admin, generated by Payload
+  app/admin-api/      photo upload, auto-edit, draft-to-product
+  collections/        Products, Categories, Media, PhotoDrafts, Policies, Users
+  globals/            Shop settings
+  components/admin/   the two shoot screens and the sidebar
+  migrations/         schema history — never edit an applied one
+  lib/                bag state, image pipeline, SEO, database reads
+```
+
+## Deploying
+
+A separate Vercel project from the v1 site, so the live shop is never at
+risk. Set the same environment variables there, and point the domain at it
+only once the catalogue has been checked in the preview URL.
+
+---
+
+## Database migrations
+
+The database is under migration control. Dev still pushes schema changes
+straight into Postgres for speed; production never does — `push` is off
+when `NODE_ENV=production`, and Vercel applies reviewed migration files
+instead.
+
+**When you change a collection or a field:**
+
+```bash
+npx payload migrate:create describe_the_change
+```
+
+Read the SQL it generates in `src/migrations/`. Then it runs automatically
+on the next deploy, because `npm run build` is:
+
+```
+payload migrate && next build
+```
+
+Migrations land before Next renders a single page, so prerendering never
+queries a column that does not exist yet.
+
+**Other commands**
+
+| | |
+| --- | --- |
+| `npm run migrate:status` | what has run and what is pending |
+| `npm run migrate` | apply pending migrations by hand |
+| `npm run build:local` | build without touching the database |
+| `npm run migrate:baseline` | one-off, for a database built by dev push |
+
+**Two things that will bite otherwise.**
+
+`payload migrate` asks an interactive yes/no if it finds the `dev` marker
+row that dev-mode push leaves behind. A Vercel build has no terminal to
+answer it, so the build hangs. That row has been removed; do not let dev
+push recreate it against production.
+
+Never point a dev server at the production database. Dev push will reshape
+live tables with no migration and no record.
+
+---
+
+## Keeping photos in step with v1
+
+While v1 is still the live site, photos reshot in the shop land there, not
+here.
+
+```bash
+npm run refresh:photos            # report what is behind
+npm run refresh:photos -- --apply # pull them across
+```
+
+It replaces the product's photos, deletes the ones it superseded, and
+touches nothing in v1's own storage.
