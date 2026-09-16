@@ -62,7 +62,7 @@ export const Products: CollectionConfig = {
   labels: { singular: 'Product', plural: 'Products' },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'status', 'category', 'price', 'stock'],
+    defaultColumns: ['photos', 'title', 'status', 'category', 'price', 'stock'],
     group: 'Shop',
     description: 'Everything the shop sells. Click a product to change its photos, price or stock.',
     listSearchableFields: ['title', 'slug', 'description'],
@@ -95,7 +95,11 @@ export const Products: CollectionConfig = {
               label: 'Photos',
               admin: {
                 description:
-                  'Drag photos in, or send them from a phone in the Photo studio. The first is the main picture — drag to reorder. Needed before this can go live, not before it can be saved.',
+                  'Drag photos in. The first is the main picture — drag to reorder. Needed before this can go live, not before it can be saved.',
+                components: {
+                  // Draw the photos in the list instead of their filenames.
+                  Cell: '/components/admin/PhotosCell#PhotosCell',
+                },
               },
             },
             {

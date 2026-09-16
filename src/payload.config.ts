@@ -40,6 +40,8 @@ export default buildConfig({
         Logo: '/components/admin/Logo#Logo',
         Icon: '/components/admin/Icon#Icon',
       },
+      // What the shop needs on opening the CMS, above Payload's collection list.
+      beforeDashboard: ['/components/admin/Dashboard#Dashboard'],
     },
   },
   collections: [Products, Categories, Media, Policies, Users],
