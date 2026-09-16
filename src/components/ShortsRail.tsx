@@ -111,14 +111,20 @@ export function ShortsRail({ items, speed }: { items: ShortCard[]; speed?: numbe
     let last = performance.now()
     let release = 0
     /*
-     * The sub-pixel remainder, kept here rather than in scrollLeft.
+     * The sub-pixel remainder.
      *
      * At 11px/s a 60Hz frame is worth 0.18px, and scrollLeft rounds a
      * fractional write away on engines that keep scroll offsets whole —
      * mobile among them. Adding 0.18 sixty times a second then landed on
-     * zero sixty times a second and the rail never moved, while a desktop
-     * engine that stores fractions drifted normally. Accumulating here and
-     * writing whole pixels behaves the same either way.
+     * zero sixty times a second and the rail never moved.
+     *
+     * Accumulating here fixes that, but whole pixels alone tick visibly:
+     * 11px/s is one step every ~91ms, which reads as a stutter rather than
+     * a drift. So the whole pixels go to scrollLeft — which is what keeps
+     * this an ordinary scroll container a finger can grab — and the
+     * leftover fraction rides along as a transform, where sub-pixel values
+     * survive and the compositor can interpolate them. A transform does not
+     * affect scrollWidth, so the two compose without fighting.
      */
     let carry = 0
 
@@ -139,10 +145,12 @@ export function ShortsRail({ items, speed }: { items: ShortCard[]; speed?: numbe
             outer.scrollLeft += whole
             carry -= whole
           }
+          inner.style.transform = `translateX(${-carry}px)`
         } else {
-          // A finger owns the rail now; a stale remainder would nudge it on
-          // release.
+          // A finger owns the rail now. Drop the remainder and the transform
+          // with it, or the track sits a fraction off under the thumb.
           carry = 0
+          inner.style.transform = ''
         }
         // Wrap only between gestures: doing it mid-swipe would cut the
         // momentum short under the finger.
@@ -174,6 +182,7 @@ export function ShortsRail({ items, speed }: { items: ShortCard[]; speed?: numbe
     frame = requestAnimationFrame(step)
     return () => {
       cancelAnimationFrame(frame)
+      inner.style.transform = ''
       outer.removeEventListener('pointerdown', onDown)
       outer.removeEventListener('touchstart', onDown)
       outer.removeEventListener('touchmove', onDown)
