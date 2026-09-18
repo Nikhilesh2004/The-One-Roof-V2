@@ -41,6 +41,13 @@ export function photosOf(product: Product): Media[] {
   return raw.filter(isMedia)
 }
 
+/**
+ * The one picture that stands for a product — in the grid, the Shorts rail
+ * and link previews. The grid picture when the shop has set one, otherwise the
+ * first photo. The product page's own gallery uses photosOf() and is
+ * unaffected: the grid picture is a separate image, not one of the photos.
+ */
 export function mainPhoto(product: Product): Media | null {
+  if (isMedia(product.thumbnail)) return product.thumbnail
   return photosOf(product)[0] ?? null
 }

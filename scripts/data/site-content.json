@@ -1,0 +1,460 @@
+{
+  "exportedAt": "2026-09-18T05:22:34.940Z",
+  "categories": [
+    {
+      "name": "Home & Décor",
+      "shortName": "Decor",
+      "slug": "decor",
+      "blurb": "Home décor, wall clocks, table lights, photo frames and unique articles.",
+      "subCategories": [
+        {
+          "id": "6a9d426377bc8c6284db452c",
+          "name": "Home Decors"
+        },
+        {
+          "id": "6a9d426377bc8c6284db452d",
+          "name": "Wall Clocks"
+        },
+        {
+          "id": "6a9d426377bc8c6284db452e",
+          "name": "Table Lights"
+        },
+        {
+          "id": "6a9d426377bc8c6284db452f",
+          "name": "Photo Frames"
+        },
+        {
+          "id": "6a9d426377bc8c6284db4530",
+          "name": "Unique Articles"
+        }
+      ],
+      "order": 10
+    },
+    {
+      "name": "Pooja Items",
+      "shortName": "Pooja",
+      "slug": "pooja",
+      "blurb": "Brass idols, diyas, kalash, agarbatti stands and everything for the pooja room.",
+      "subCategories": [
+        {
+          "id": "6a9d426477bc8c6284db4531",
+          "name": "Brass Idols"
+        },
+        {
+          "id": "6a9d426477bc8c6284db4532",
+          "name": "Diyas"
+        },
+        {
+          "id": "6a9d426477bc8c6284db4533",
+          "name": "Kalash"
+        },
+        {
+          "id": "6a9d426477bc8c6284db4534",
+          "name": "Pooja Thali"
+        },
+        {
+          "id": "6a9d426477bc8c6284db4535",
+          "name": "Agarbatti Stands"
+        }
+      ],
+      "order": 20
+    },
+    {
+      "name": "Jewellery & Fashion",
+      "shortName": "Jewellery",
+      "slug": "fashion",
+      "blurb": "One gram gold jewellery, belts and wallets, and brass items.",
+      "subCategories": [
+        {
+          "id": "6a9d426577bc8c6284db4536",
+          "name": "One Gram Jewellery"
+        },
+        {
+          "id": "6a9d426577bc8c6284db4537",
+          "name": "Bridal Sets"
+        },
+        {
+          "id": "6a9d426577bc8c6284db4538",
+          "name": "Belts & Wallets"
+        },
+        {
+          "id": "6a9d426577bc8c6284db4539",
+          "name": "Brass Items"
+        }
+      ],
+      "order": 30
+    },
+    {
+      "name": "Bags",
+      "shortName": "Bags",
+      "slug": "bags",
+      "blurb": "Handbags, clutches, backpacks and travel bags.",
+      "subCategories": [
+        {
+          "id": "6a9d426677bc8c6284db453a",
+          "name": "Handbags"
+        },
+        {
+          "id": "6a9d426677bc8c6284db453b",
+          "name": "Clutches"
+        },
+        {
+          "id": "6a9d426677bc8c6284db453c",
+          "name": "Backpacks"
+        },
+        {
+          "id": "6a9d426677bc8c6284db453d",
+          "name": "Travel Bags"
+        }
+      ],
+      "order": 40
+    },
+    {
+      "name": "Shoes",
+      "shortName": "Shoes",
+      "slug": "shoes",
+      "blurb": "Formals, casuals and everyday footwear for men, women and children.",
+      "subCategories": [
+        {
+          "id": "6a9d426777bc8c6284db453e",
+          "name": "Men's Footwear"
+        },
+        {
+          "id": "6a9d426777bc8c6284db453f",
+          "name": "Women's Footwear"
+        },
+        {
+          "id": "6a9d426777bc8c6284db4540",
+          "name": "Kids' Footwear"
+        },
+        {
+          "id": "6a9d426777bc8c6284db4541",
+          "name": "Sports & Casual"
+        }
+      ],
+      "order": 50
+    },
+    {
+      "name": "Watches",
+      "shortName": "Watches",
+      "slug": "watches",
+      "blurb": "Everyday and occasion watches, plus couple sets for gifting.",
+      "subCategories": [
+        {
+          "id": "6a9d426877bc8c6284db4542",
+          "name": "Men's Watches"
+        },
+        {
+          "id": "6a9d426877bc8c6284db4543",
+          "name": "Women's Watches"
+        },
+        {
+          "id": "6a9d426877bc8c6284db4544",
+          "name": "Couple Sets"
+        },
+        {
+          "id": "6a9d426877bc8c6284db4545",
+          "name": "Smart Watches"
+        }
+      ],
+      "order": 60
+    },
+    {
+      "name": "Gifting & Dining",
+      "shortName": "Gifting",
+      "slug": "gifting",
+      "blurb": "Gift articles, glass articles, Pingani articles and dinner sets.",
+      "subCategories": [
+        {
+          "id": "6a9d426877bc8c6284db4546",
+          "name": "Gift Articles"
+        },
+        {
+          "id": "6a9d426877bc8c6284db4547",
+          "name": "Glass Articles"
+        },
+        {
+          "id": "6a9d426877bc8c6284db4548",
+          "name": "Pingani Articles"
+        },
+        {
+          "id": "6a9d426877bc8c6284db4549",
+          "name": "Dinner Sets"
+        }
+      ],
+      "order": 70
+    },
+    {
+      "name": "Tech & Lifestyle",
+      "shortName": "Lifestyle",
+      "slug": "lifestyle",
+      "blurb": "Smart gadgets, electronics, Bluetooth speakers, copper bottles, perfumes and toys.",
+      "subCategories": [
+        {
+          "id": "6a9d426977bc8c6284db454a",
+          "name": "Smart Gadgets"
+        },
+        {
+          "id": "6a9d426977bc8c6284db454b",
+          "name": "Electronics"
+        },
+        {
+          "id": "6a9d426977bc8c6284db454c",
+          "name": "Bluetooth Speakers"
+        },
+        {
+          "id": "6a9d426977bc8c6284db454d",
+          "name": "Copper Bottles"
+        },
+        {
+          "id": "6a9d426977bc8c6284db454e",
+          "name": "Perfumes"
+        },
+        {
+          "id": "6a9d426977bc8c6284db454f",
+          "name": "Toys"
+        }
+      ],
+      "order": 80
+    }
+  ],
+  "policies": [
+    {
+      "title": "Terms of service",
+      "slug": "terms-of-service",
+      "summary": "What you can expect from us, and what we ask of you.",
+      "sections": [
+        {
+          "id": "6a9c7990b9dff075f8f0fc23",
+          "heading": "Who you are dealing with",
+          "body": "This website is operated by The One Roof, a retail shop at Sri Nagar 5th Lane, Guntur, Andhra Pradesh.\n\nLegal entity name: [TO FILL]\nGSTIN: [TO FILL]\nRegistered address: [TO FILL]"
+        },
+        {
+          "id": "6a9c7990b9dff075f8f0fc24",
+          "heading": "This website does not take payments",
+          "body": "There is no checkout here and no card, UPI or net-banking details are ever collected. You build a bag, send it to us on WhatsApp, and we reply confirming what is in stock and what the total comes to.\n\nPayment happens at the shop counter or on delivery. If any page, message or person asks you to pay through a link claiming to be us, it is not us. Ask on our published WhatsApp number before paying anyone anything."
+        },
+        {
+          "id": "6a9c7990b9dff075f8f0fc25",
+          "heading": "An order is made when we confirm it",
+          "body": "Adding something to the bag does not reserve it, and sending us the list is a request rather than a purchase. Stock counts shown here are kept current but the shop sells over the counter too, so the last piece can go while you are typing.\n\nA sale exists once we have replied confirming availability and the total, and you have agreed to it."
+        },
+        {
+          "id": "6a9c7990b9dff075f8f0fc26",
+          "heading": "Prices",
+          "body": "Prices are in Indian rupees and include all applicable taxes. The figure we confirm on WhatsApp is the figure you pay — delivery included where it applies.\n\nWe correct pricing mistakes when we find them. If something is listed at an obviously wrong price we will tell you before confirming, and you are free to walk away."
+        },
+        {
+          "id": "6a9c7990b9dff075f8f0fc27",
+          "heading": "Photographs",
+          "body": "Product photographs are taken in our own shop. Colour varies between screens, and brass and one-gram gold in particular photograph warmer than they look in the hand. Where an item is handmade, no two are identical.\n\nIf the piece you receive is not what you expected, tell us — see the returns page."
+        },
+        {
+          "id": "6a9c7990b9dff075f8f0fc28",
+          "heading": "Changes to these terms",
+          "body": "We may update this page. The date at the bottom is when it last changed."
+        }
+      ],
+      "needsReview": true,
+      "order": 10
+    },
+    {
+      "title": "Privacy policy",
+      "slug": "privacy-policy",
+      "summary": "What little we collect, and what we do not.",
+      "sections": [
+        {
+          "id": "6a9c7991b9dff075f8f0fc29",
+          "heading": "The short version",
+          "body": "We do not ask you to make an account. We do not collect card or bank details, because this website takes no payments. Your shopping bag and your saved items are stored in your own browser and never reach us until you choose to send them."
+        },
+        {
+          "id": "6a9c7991b9dff075f8f0fc2a",
+          "heading": "What is stored on your device",
+          "body": "Your bag and your saved list live in your browser's local storage, on your phone or computer. They stay there until you clear your browser data. We cannot read them, and they are not sent anywhere.\n\nYour choice of light or dark appearance is stored the same way."
+        },
+        {
+          "id": "6a9c7991b9dff075f8f0fc2b",
+          "heading": "What reaches us, and when",
+          "body": "Only what you send. Pressing \"Order this bag on WhatsApp\" opens WhatsApp with a message you can read and edit before sending. Once you send it, we have your WhatsApp number and whatever you wrote, in that chat.\n\nIf you then order, we keep what we need to fulfil and account for the sale: what you bought, the amount, and a delivery address if there is a delivery."
+        },
+        {
+          "id": "6a9c7991b9dff075f8f0fc2c",
+          "heading": "WhatsApp",
+          "body": "Conversations happen on WhatsApp, which is operated by Meta, not by us. Their handling of your data is governed by their own privacy policy. If you would rather not use WhatsApp, telephone or email us instead — both are on the contact page."
+        },
+        {
+          "id": "6a9c7991b9dff075f8f0fc2d",
+          "heading": "Who else sees anything",
+          "body": "Our website is hosted by Vercel and its content is stored with Supabase. Neither is sent your bag or your saved items, because those never leave your browser.\n\nWe do not sell or share customer information. We do not run advertising trackers on this site. [TO FILL: name any analytics or delivery partner you use.]"
+        },
+        {
+          "id": "6a9c7991b9dff075f8f0fc2e",
+          "heading": "Asking us what we hold",
+          "body": "Message or email us and we will tell you what we have about you, correct it, or delete it, unless we are required to keep it for tax or accounting purposes.\n\nContact for privacy questions: [TO FILL: name, email, phone]"
+        }
+      ],
+      "needsReview": true,
+      "order": 20
+    },
+    {
+      "title": "Returns & exchange",
+      "slug": "returns-and-exchange",
+      "summary": "What we will take back, in what condition, and by when.",
+      "sections": [
+        {
+          "id": "6a9c7992b9dff075f8f0fc2f",
+          "heading": "If something is damaged or wrong",
+          "body": "Tell us within [TO FILL: e.g. 48 hours] of receiving it, with a photograph. If we sent the wrong item, or it arrived damaged, we replace it or refund it in full, and we bear the cost of getting it back.\n\nPlease photograph the parcel before opening it where you can. It settles a courier damage claim quickly."
+        },
+        {
+          "id": "6a9c7992b9dff075f8f0fc30",
+          "heading": "If you simply changed your mind",
+          "body": "[TO FILL: state whether you accept change-of-mind returns, within how many days, and whether it is a refund, an exchange or a credit.]\n\nWhere we do accept one, the item must be unused and in its original packaging with any tags still attached."
+        },
+        {
+          "id": "6a9c7992b9dff075f8f0fc31",
+          "heading": "What cannot come back",
+          "body": "[TO FILL: confirm this list matches how the shop actually trades.]\n\nItems made or engraved to order. Earrings and other pierced jewellery, for hygiene. Anything used, marked or missing its packaging. Sale items marked as final."
+        },
+        {
+          "id": "6a9c7992b9dff075f8f0fc32",
+          "heading": "How to start one",
+          "body": "Message us on WhatsApp with your order, the item code from the product page, and a photograph. We will tell you whether to bring it to the shop or send it back.\n\nRefunds, where they apply, are made by the same route the payment came in, within [TO FILL: number] working days of us receiving the item."
+        },
+        {
+          "id": "6a9c7992b9dff075f8f0fc33",
+          "heading": "Buying at the counter",
+          "body": "The same terms apply whether you found the item here or in the shop. Bring the bill."
+        }
+      ],
+      "needsReview": true,
+      "order": 30
+    },
+    {
+      "title": "Consumer Protection (E-Commerce) Rules, 2020",
+      "slug": "consumer-protection-e-commerce-rules",
+      "summary": "The seller and grievance details these rules require us to publish.",
+      "sections": [
+        {
+          "id": "6a9c7993b9dff075f8f0fc34",
+          "heading": "Why this page exists",
+          "body": "The Consumer Protection (E-Commerce) Rules, 2020 require anyone selling online in India to publish who they are and how to complain, and to name someone responsible for answering complaints within set times. This page is that disclosure."
+        },
+        {
+          "id": "6a9c7993b9dff075f8f0fc35",
+          "heading": "Seller",
+          "body": "The One Roof sells its own goods. This is not a marketplace: there are no third-party sellers here, and every item is stocked and dispatched by us.\n\nLegal name: [TO FILL]\nPrincipal place of business: [TO FILL — full registered address]\nGSTIN: [TO FILL]\nEmail: theoneroof4@gmail.com\nTelephone: +91 96666 62472"
+        },
+        {
+          "id": "6a9c7993b9dff075f8f0fc36",
+          "heading": "Grievance officer",
+          "body": "Name: [TO FILL]\nDesignation: [TO FILL]\nEmail: [TO FILL]\nTelephone: [TO FILL]\n\nThe rules require a complaint to be acknowledged within forty-eight hours and resolved within one month of receipt."
+        },
+        {
+          "id": "6a9c7993b9dff075f8f0fc37",
+          "heading": "How to complain",
+          "body": "Write to the grievance officer above with your order details and what went wrong. If you would rather start on WhatsApp, do — but ask for it to be recorded as a formal complaint so the clock starts.\n\nYou may also raise a complaint through the National Consumer Helpline on 1915, or at consumerhelpline.gov.in."
+        },
+        {
+          "id": "6a9c7993b9dff075f8f0fc38",
+          "heading": "Country of origin",
+          "body": "Every product page states its country of origin. Where a page does not, it is because we have not yet verified it from the item's own label, and we would rather leave it blank than guess. Ask us and we will check the piece in the shop."
+        }
+      ],
+      "needsReview": true,
+      "order": 40
+    },
+    {
+      "title": "Legal Metrology declarations",
+      "slug": "legal-metrology-declarations",
+      "summary": "The label information the law requires with every packaged item.",
+      "sections": [
+        {
+          "id": "6a9c7993b9dff075f8f0fc39",
+          "heading": "What must be declared",
+          "body": "The Legal Metrology (Packaged Commodities) Rules, 2011 require certain information to be shown before you buy a packaged item: what it is, how much of it there is, who made or imported it, where it came from, when it was imported or packed, and the maximum retail price inclusive of all taxes."
+        },
+        {
+          "id": "6a9c7993b9dff075f8f0fc3a",
+          "heading": "Where to find it",
+          "body": "On every product page, under \"Label details\". It carries the generic name, net quantity, country of origin, manufacturer or importer, month and year, size, weight and material, as printed on the item's own label.\n\nThe price shown is the maximum retail price and includes all taxes."
+        },
+        {
+          "id": "6a9c7993b9dff075f8f0fc3b",
+          "heading": "Where a field is blank",
+          "body": "A blank field means we have not yet read that value off the item itself. We do not fill these in by assumption — a wrong country of origin is a false declaration, not a typo.\n\nIf you need a value that is missing, ask us and we will check the physical label before you buy."
+        },
+        {
+          "id": "6a9c7993b9dff075f8f0fc3c",
+          "heading": "If a declaration looks wrong",
+          "body": "Tell us. We would rather correct it than defend it, and a mistake here is ours to fix.\n\nContact: [TO FILL: name and email of whoever is responsible for listings]"
+        }
+      ],
+      "needsReview": true,
+      "order": 50
+    }
+  ],
+  "settings": {
+    "whatsappNumber": "919666662472",
+    "displayPhone": "+91 96666 62472",
+    "email": "theoneroof4@gmail.com",
+    "address": "Shop No. 7-1-64, Sri Nagar, 5th Lane,\nGuntur, Guntur Dist,\nAndhra Pradesh - 522002",
+    "hours": "Open 7 days · 10 AM – 8 PM",
+    "mapsUrl": null,
+    "gstin": "37JBYPD1312N1Z4",
+    "grievance": {
+      "name": "Chillara Deepika",
+      "email": "theoneroof4@gmail.com",
+      "phone": "+91 96666 62472",
+      "note": "Open 7 days, 10:00–20:00 IST. Complaints acknowledged within 48 hours and resolved within one month."
+    },
+    "youtubeHandle": "@TheOneRoof-y2g",
+    "instagramUrl": null,
+    "agencyCredit": "Made by",
+    "agencyName": "AALITECH",
+    "maintainerCredit": "Maintained by",
+    "maintainerName": "AALI CONSSULTANCY",
+    "maintainerUrl": "https://aaliconssultancy.com/",
+    "madeInIndia": true,
+    "agencyUrl": "https://aalitech.co",
+    "announcement": "Free delivery over ₹999",
+    "heroEyebrow": "Wholesale & retail · Guntur",
+    "heroHeadline": "Everything from the Shorts, now under one roof.",
+    "heroBody": "Jewellery, shoes, watches, bags, décor, gifting and lifestyle — from the shop on Sri Nagar 5th Lane. Tap any Short, land on the product.",
+    "subscriberCount": "69.6K",
+    "shortsSpeed": 11,
+    "aboutText": "The One Roof began as a single shop in Guntur and grew through Telugu-language Shorts: budget wall clocks, double bumper shoe offers, Krishnashtami specials. Orders arrived over WhatsApp, one chat thread at a time. This storefront is that same shop — same buyer, same prices, same Guntur address.",
+    "deliveryFee": 59,
+    "freeDeliveryOver": 999,
+    "deliveryNote": "We confirm availability, the final total and delivery on WhatsApp. Pay at the shop or on delivery — nothing is charged on this website.",
+    "faqs": [
+      {
+        "id": "6a9c58bb33296647a4b8243a",
+        "question": "How do I place an order?",
+        "answer": "Add what you want to the bag, then press “Enquire on WhatsApp”. The message arrives with your whole list in it. We confirm availability and the total, and arrange delivery from there."
+      },
+      {
+        "id": "6a9c58bb33296647a4b8243b",
+        "question": "Why can I not pay on the website?",
+        "answer": "We deliberately take no payments online. Payment pages are the easiest thing to fake, and we would rather nobody lost money to a copy of ours. You pay at the shop or on delivery."
+      },
+      {
+        "id": "6a9c58bb33296647a4b8243c",
+        "question": "How do I check if something is in stock?",
+        "answer": "The stock line on each product is kept current. If you want certainty on something specific, message us — we answer within minutes during shop hours."
+      },
+      {
+        "id": "6a9c58bb33296647a4b8243d",
+        "question": "Do you deliver outside Guntur?",
+        "answer": "Ask us on WhatsApp with your pin code and we will tell you what is possible and what it costs."
+      },
+      {
+        "id": "6a9c58bb33296647a4b8243e",
+        "question": "Can I see the product before I buy?",
+        "answer": "Yes. The shop is on Sri Nagar 5th Lane and is open seven days a week. Bring the item code from the product page and we will have it out for you."
+      }
+    ],
+    "globalType": "settings"
+  }
+}

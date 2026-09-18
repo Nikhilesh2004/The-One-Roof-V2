@@ -103,6 +103,16 @@ export const Products: CollectionConfig = {
               },
             },
             {
+              name: 'thumbnail',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Grid picture',
+              admin: {
+                description:
+                  'Optional. The one picture shown in the shop grid, before a customer clicks in. Leave empty to use the first photo.',
+              },
+            },
+            {
               type: 'row',
               fields: [
                 {

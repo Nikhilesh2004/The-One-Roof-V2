@@ -6,7 +6,6 @@ import { waLink } from '../../../lib/format'
 import { getCategories, getSettings } from '../../../lib/payload'
 import { QuoteForm } from '../../../components/QuoteForm'
 
-export const revalidate = 300
 
 export const metadata: Metadata = {
   title: 'Visit or call',

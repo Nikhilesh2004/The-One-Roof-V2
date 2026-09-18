@@ -144,6 +144,10 @@ export interface Product {
    */
   photos?: (number | Media)[] | null;
   /**
+   * Optional. The one picture shown in the shop grid, before a customer clicks in. Leave empty to use the first photo.
+   */
+  thumbnail?: (number | null) | Media;
+  /**
    * What the customer pays. Needed before it goes live.
    */
   price?: number | null;
@@ -474,6 +478,7 @@ export interface PayloadMigration {
 export interface ProductsSelect<T extends boolean = true> {
   title?: T;
   photos?: T;
+  thumbnail?: T;
   price?: T;
   mrp?: T;
   stock?: T;

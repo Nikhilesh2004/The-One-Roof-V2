@@ -8,7 +8,6 @@ import { getCategories, getProducts } from '../../../lib/payload'
 import { JsonLd } from '../../../components/JsonLd'
 import { breadcrumbs, graph, itemList } from '../../../lib/seo'
 
-export const revalidate = 60
 
 export const metadata: Metadata = {
   title: 'Buy Gifts, Décor & Pooja Items in Guntur',

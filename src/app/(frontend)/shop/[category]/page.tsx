@@ -11,12 +11,6 @@ import { waLink } from '../../../../lib/format'
 import { JsonLd } from '../../../../components/JsonLd'
 import { breadcrumbs, categoryDescription, graph, itemList } from '../../../../lib/seo'
 
-export const revalidate = 60
-
-export async function generateStaticParams() {
-  const categories = await getCategories()
-  return categories.filter((c) => c.slug).map((c) => ({ category: c.slug as string }))
-}
 
 export async function generateMetadata({
   params,

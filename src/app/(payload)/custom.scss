@@ -242,3 +242,383 @@ html[data-theme='dark'] {
 .tor-stat--quiet .tor-stat__value {
   color: var(--theme-elevation-500);
 }
+
+/* ── Shop menu ──────────────────────────────────────────────────────
+   Three numbered steps above Payload's collection list.               */
+
+.tor-nav {
+  margin-bottom: 1.5rem;
+}
+
+.tor-step {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  padding: 0.65rem 0.75rem;
+  margin-bottom: 0.3rem;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--theme-elevation-1000);
+  background-color: var(--theme-elevation-50);
+  border: 1px solid transparent;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--theme-elevation-100);
+    border-color: var(--theme-elevation-150);
+    text-decoration: none;
+  }
+}
+
+.tor-step__n {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background-color: var(--theme-elevation-150);
+  color: var(--theme-elevation-1000);
+}
+
+.tor-step__text {
+  min-width: 0;
+  flex: 1;
+}
+
+.tor-step__title {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.tor-step__badge {
+  margin-left: 0.4rem;
+  padding: 0 0.42rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  background-color: var(--brand-brass);
+  color: var(--brand-on-brass);
+}
+
+.tor-step__hint {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--theme-elevation-500);
+}
+
+.tor-nav__logout {
+  display: block;
+  margin-top: 0.9rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 5px;
+  border: 1px solid var(--theme-elevation-150);
+  color: var(--theme-elevation-600);
+  text-align: center;
+  font-size: 0.82rem;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--theme-elevation-1000);
+    text-decoration: none;
+  }
+}
+
+/* ── Bulk upload ────────────────────────────────────────────────────
+   Good and bad are fixed mid-tones on a translucent fill, so they read on
+   the navy and the paper theme alike.                                  */
+
+.tor-bu {
+  --bu-good: #3f9d6c;
+  --bu-good-fill: rgba(63, 157, 108, 0.14);
+  --bu-bad: #d0503c;
+  --bu-bad-fill: rgba(208, 80, 60, 0.13);
+
+  padding-block: 1.5rem 3rem;
+  color: var(--theme-elevation-1000);
+}
+
+.tor-bu__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.tor-bu__title {
+  margin: 0 0 0.2rem;
+  font-size: 1.6rem;
+}
+
+.tor-bu__lede {
+  margin: 0;
+  color: var(--theme-elevation-500);
+}
+
+.tor-bu__picks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.tor-bu__pick {
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: var(--theme-elevation-50);
+  border: 1px solid var(--theme-elevation-150);
+
+  &.is-done {
+    border-color: var(--bu-good);
+
+    .tor-step__n {
+      background-color: var(--bu-good);
+      color: #fff;
+    }
+  }
+}
+
+.tor-bu__pickhead {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  margin-bottom: 0.85rem;
+}
+
+.tor-bu__sub {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--theme-elevation-500);
+}
+
+/* A label styled as a button; the real input is hidden inside it. */
+.tor-bu__file {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.9rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid var(--theme-elevation-250);
+  background-color: var(--theme-elevation-0);
+  color: var(--theme-elevation-1000);
+
+  &:hover {
+    border-color: var(--brand-brass);
+  }
+
+  input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+}
+
+.tor-bu__drop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px dashed var(--theme-elevation-250);
+}
+
+.tor-bu__or {
+  font-size: 0.78rem;
+  color: var(--theme-elevation-500);
+}
+
+.tor-bu__link {
+  margin-top: 0.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--brand-brass);
+  text-decoration: underline;
+}
+
+.tor-bu__alert,
+.tor-bu__note {
+  margin: 0 0 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+}
+
+.tor-bu__alert {
+  background-color: var(--bu-bad-fill);
+  border-left: 3px solid var(--bu-bad);
+}
+
+.tor-bu__note {
+  background-color: var(--theme-elevation-50);
+  border-left: 3px solid var(--theme-elevation-250);
+}
+
+.tor-bu__check {
+  margin-top: 0.5rem;
+}
+
+.tor-bu__h2 {
+  margin: 0 0 0.85rem;
+  font-size: 1.15rem;
+}
+
+.tor-bu__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.tor-bu__chip {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  background-color: var(--theme-elevation-100);
+
+  b {
+    font-variant-numeric: tabular-nums;
+  }
+
+  &.is-good {
+    background-color: var(--bu-good-fill);
+    color: var(--bu-good);
+  }
+
+  &.is-bad {
+    background-color: var(--bu-bad-fill);
+    color: var(--bu-bad);
+  }
+}
+
+.tor-bu__toggle {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-left: auto;
+  font-size: 0.82rem;
+  color: var(--theme-elevation-600);
+  cursor: pointer;
+}
+
+.tor-bu__tablewrap {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--theme-elevation-150);
+}
+
+.tor-bu__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+
+  th {
+    text-align: left;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--theme-elevation-500);
+    background-color: var(--theme-elevation-50);
+    border-bottom: 1px solid var(--theme-elevation-150);
+  }
+
+  td {
+    padding: 0.55rem 0.75rem;
+    vertical-align: top;
+    border-bottom: 1px solid var(--theme-elevation-100);
+  }
+
+  tr.is-bad td {
+    background-color: var(--bu-bad-fill);
+  }
+}
+
+.tor-bu__num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tor-bu__badge {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.74rem;
+  font-weight: 600;
+
+  &.is-new {
+    background-color: var(--brand-brass);
+    color: var(--brand-on-brass);
+  }
+
+  &.is-update {
+    background-color: var(--theme-elevation-150);
+  }
+
+  &.is-bad {
+    background-color: var(--bu-bad);
+    color: #fff;
+  }
+}
+
+.tor-bu__msg {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  color: var(--theme-elevation-600);
+
+  &.is-bad {
+    color: var(--bu-bad);
+  }
+}
+
+.tor-bu__go {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 1.25rem;
+}
+
+.tor-bu__progress {
+  flex: 1;
+  min-width: 260px;
+  font-size: 0.88rem;
+}
+
+.tor-bu__bar {
+  height: 8px;
+  margin-top: 0.45rem;
+  border-radius: 999px;
+  overflow: hidden;
+  background-color: var(--theme-elevation-100);
+
+  div {
+    height: 100%;
+    background-color: var(--brand-brass);
+    transition: width 0.2s ease;
+  }
+}
+
+.tor-bu__fails {
+  margin: 0 0 1rem;
+  padding-left: 1.1rem;
+  font-size: 0.86rem;
+
+  li {
+    margin-bottom: 0.35rem;
+  }
+}

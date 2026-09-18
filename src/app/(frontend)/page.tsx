@@ -11,7 +11,6 @@ import { getCategories, getProducts, getSettings } from '../../lib/payload'
 import { JsonLd } from '../../components/JsonLd'
 import { faqSchema, graph, itemList } from '../../lib/seo'
 
-export const revalidate = 60
 
 export default async function HomePage() {
   const [settings, categories, featured, newest] = await Promise.all([

@@ -4,7 +4,6 @@ import React from 'react'
 
 import { getCategories, getSettings } from '../../../lib/payload'
 
-export const revalidate = 300
 
 export const metadata: Metadata = {
   title: 'About the shop',

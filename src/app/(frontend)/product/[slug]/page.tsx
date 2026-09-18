@@ -16,7 +16,6 @@ import type { Category } from '../../../../payload-types'
 import { JsonLd } from '../../../../components/JsonLd'
 import { breadcrumbs, graph, productSchema } from '../../../../lib/seo'
 
-export const revalidate = 60
 
 /**
  * Every product gets a page at its own address. In v1 tapping a product
@@ -25,11 +24,6 @@ export const revalidate = 60
  * nothing to share or go back to. This is a page: it has a URL, a title,
  * a back button, and a link you can paste into WhatsApp.
  */
-export async function generateStaticParams() {
-  const products = await getProducts({ limit: 500 })
-  return products.filter((p) => p.slug).map((p) => ({ slug: p.slug as string }))
-}
-
 export async function generateMetadata({
   params,
 }: {

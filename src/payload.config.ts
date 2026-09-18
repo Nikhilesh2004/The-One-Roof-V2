@@ -42,6 +42,18 @@ export default buildConfig({
       },
       // What the shop needs on opening the CMS, above Payload's collection list.
       beforeDashboard: ['/components/admin/Dashboard#Dashboard'],
+      // The shop's three-step path through the CMS, above the collection list.
+      afterNavLinks: ['/components/admin/ShopNav#ShopNav'],
+      views: {
+        bulkUpload: {
+          Component: '/components/admin/BulkUploadView#BulkUploadView',
+          path: '/bulk-upload',
+          meta: {
+            title: 'Bulk upload',
+            description: 'Add or update many products at once from the Excel template.',
+          },
+        },
+      },
     },
   },
   collections: [Products, Categories, Media, Policies, Users],

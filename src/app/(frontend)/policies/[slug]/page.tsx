@@ -5,12 +5,6 @@ import React from 'react'
 
 import { getPolicies, getPolicyBySlug } from '../../../../lib/payload'
 
-export const revalidate = 300
-
-export async function generateStaticParams() {
-  const policies = await getPolicies()
-  return policies.filter((p) => p.slug).map((p) => ({ slug: p.slug as string }))
-}
 
 export async function generateMetadata({
   params,

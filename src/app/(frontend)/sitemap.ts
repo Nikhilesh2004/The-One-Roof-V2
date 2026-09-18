@@ -4,8 +4,12 @@ import { getCategories, getProducts } from '../../lib/payload'
 
 const base = process.env.NEXT_PUBLIC_SITE_URL || 'https://theoneroof.co'
 
+// Rendered on each visit, not at build: the VPS build has no database to
+// read, and a change made in the CMS then shows on the site immediately.
+export const dynamic = 'force-dynamic'
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [products, categories] = await Promise.all([getProducts({ limit: 500 }), getCategories()])
+  const [products, categories] = await Promise.all([getProducts({ limit: 50000 }), getCategories()])
 
   return [
     { url: base, changeFrequency: 'weekly', priority: 1 },

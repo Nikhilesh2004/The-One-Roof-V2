@@ -30,6 +30,22 @@ const jost = Jost({
   display: 'swap',
 })
 
+/*
+ * Every page under this layout renders on each visit rather than at build.
+ *
+ * This layout reads the sections and shop settings, so every page touches
+ * the database. On the VPS the image is built in a container that cannot
+ * reach Postgres — and on a fresh deploy the tables do not exist until
+ * migrations run at container start — so a page that prerendered would fail
+ * the build. Rendering per visit also means a change saved in the CMS is on
+ * the site immediately, with no revalidate window to wait out and no
+ * incremental-regeneration writes to pay for.
+ *
+ * The database is on the same machine, so each render's queries cost
+ * milliseconds. If traffic ever makes that matter, cache at the proxy.
+ */
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
