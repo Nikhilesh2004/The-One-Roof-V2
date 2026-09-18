@@ -622,3 +622,34 @@ html[data-theme='dark'] {
     margin-bottom: 0.35rem;
   }
 }
+
+/* ── Bulk actions bar ───────────────────────────────────────────────
+   Payload shows Edit / Delete for ticked rows in a bar fixed to the
+   bottom of the window, painted in the page's own background. On the dark
+   theme it simply disappeared: the shop ticked products and asked where the
+   actions were. Raised, ruled in brass, and shadowed so it reads as the
+   thing that appeared because you ticked something — and Delete in red, so
+   it is never the button pressed by habit.                              */
+
+.collection-list__list-selection {
+  padding: 14px 0;
+  background-color: var(--theme-elevation-50);
+  border-top: 2px solid var(--brand-brass);
+  box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.28);
+
+  .btn {
+    padding: 5px 14px;
+    font-weight: 600;
+    border: 1px solid var(--theme-elevation-200);
+  }
+}
+
+.collection-list__list-selection .delete-documents__toggle {
+  color: #fff;
+  background-color: #c0473a;
+  border-color: #c0473a;
+
+  &:hover {
+    background-color: #a83a2e;
+  }
+}
