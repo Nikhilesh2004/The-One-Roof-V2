@@ -1,126 +1,104 @@
 # Moving The One Roof onto the VPS
 
-Target: Hostinger KVM 4 (4 vCPU / 16 GB / 200 GB / 16 TB) running Coolify.
-Leaving behind: Vercel (hosting, image optimisation) and Supabase (Postgres,
-storage). After this the shop depends on one box and its backups.
+Target: Hostinger KVM 4 running Coolify. Leaving behind: Vercel and Supabase.
 
-**Setup and cutover are different jobs.** Everything up to step 7 can be done
-while the live site carries on serving from Vercel, untouched. Only step 8
-moves customers. Do not run step 8 tired.
+The shop is **re-imported, not copied**. The live catalogue was exported into
+the bulk-upload spreadsheet (`npm run export:catalogue`), and it goes back in
+through the CMS's own Bulk upload page — the same one the photo team will use.
+So there is no database dump, no restore, and no photo sync.
+
+**Setup and cutover are separate.** Everything before step 8 happens while the
+live site keeps running on Vercel, untouched. Only step 8 moves customers.
 
 ---
 
-## 1. Coolify
+## Already done
 
-    curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
+- Coolify installed and claimed, server type "This machine"
+- PostgreSQL 17 running as `theoneroof-db`, database `theoneroof`, SSL off,
+  access Private
 
-Dashboard on `:8000`. Create the admin account immediately — an unclaimed
-Coolify is an open door. Then firewall: allow 22, 80, 443, and 8000 only from
-your own IP.
+## 1. Create the app
 
-## 2. Postgres
+Coolify → The One Roof project → **+ New** → **Public Repository**
 
-Add a PostgreSQL service in Coolify. Note the internal hostname it gives the
-container (usually the service name) — the app reaches it over Coolify's
-internal network, so it never needs a public port.
+- Repository: `https://github.com/Nikhilesh2004/The-One-Roof-V2`
+- Branch: `main`
+- Build pack: **Dockerfile** (not Nixpacks, not Docker Compose)
+- Port: **3000**
 
-## 3. Bring the database across
+## 2. Two settings
 
-Run this **on the VPS**, not on a laptop: it is datacenter to datacenter, and
-the dump never touches a home connection.
+Environment Variables, both as normal (runtime) variables:
 
-Supabase's session pooler is port **5432** (6543 is transaction mode and is
-wrong for a dump). Take only the `payload` schema — the v1 site's tables live
-in `public` and are not wanted.
+    DATABASE_URL=<the database's "Postgres URL (internal)", copied from its page>
+    PAYLOAD_SECRET=<a long random string>
 
-    docker exec -i <postgres-container> pg_dump \
-      "postgresql://postgres.<ref>:<password>@aws-0-ap-south-1.pooler.supabase.com:5432/postgres" \
-      --schema=payload --no-owner --no-acl -Fc > /tmp/payload.dump
+**Do not add any `S3_*` variable.** Their absence is what makes uploads go to
+the server's own disk instead of Supabase.
 
-    docker exec -i <postgres-container> pg_restore \
-      -d "postgresql://<user>:<pass>@localhost:5432/<db>" \
-      --no-owner --no-acl /tmp/payload.dump
+Not needed:
 
-Check it landed:
+- `NEXT_PUBLIC_SITE_URL` — every use defaults to `https://theoneroof.co`
+- `MEDIA_DIR` — already set to `/app/media` in the Dockerfile
+- `DATABASE_SESSION_MODE`, `DATABASE_POOL_MAX` — Supabase workarounds; the code
+  ignores them for any other database
 
-    select count(*) from payload.products;
+## 3. Photo storage
 
-34 products at the time of writing.
+App → **Persistent Storage** → add a volume mounted at **`/app/media`**.
 
-## 4. Bring the photos across
+Without this, every redeploy deletes every photo.
 
-176 MB, flat filenames, same bucket. Again from the VPS:
+## 4. Deploy
 
-    apt install -y awscli
-    aws configure set aws_access_key_id <S3_ACCESS_KEY_ID>
-    aws configure set aws_secret_access_key <S3_SECRET_ACCESS_KEY>
-    aws --endpoint-url https://<ref>.storage.supabase.co/storage/v1/s3 \
-        --region ap-south-1 \
-        s3 sync s3://media /var/lib/theoneroof/media
+First build takes several minutes. It does **not** need the database — pages
+render when visited, not at build time. When the container starts it runs
+`payload migrate`, which creates every table in the empty database.
 
-**Filenames must survive exactly.** Every product row references its photo by
-name; rename anything and the shop loses its photography.
+## 5. First login
 
-The old `photo-drafts` files may be in there too. Harmless clutter — that
-feature is gone. Delete them later, not during a migration.
+Open the app's temporary Coolify URL, then `/admin`. On an empty database
+Payload shows **Create first user** — that becomes the admin account.
 
-## 5. Deploy the app
+## 6. Sections, policies, settings
 
-New Coolify application, source = `github.com/Nikhilesh2004/The-One-Roof-V2`,
-build pack = **Dockerfile**, port **3000**.
+Coolify → Terminal → the **app** container (not the database):
 
-Persistent volume: host `/var/lib/theoneroof/media` -> container `/app/media`.
+    npm run seed:site-content
 
-Environment:
+Loads the 8 sections, 5 policy pages and the shop settings from
+`scripts/data/site-content.json`. **Must run before step 7** — the bulk upload
+checks every row's section against the sections that exist.
 
-    DATABASE_URL=postgresql://<user>:<pass>@<postgres-container>:5432/<db>
-    PAYLOAD_SECRET=<the same value as now — changing it invalidates sessions>
-    NEXT_PUBLIC_SITE_URL=https://theoneroof.co
-    MEDIA_DIR=/app/media
+## 7. Products
 
-**Do not set any `S3_*` variable.** Their absence is what makes Payload fall
-back to local disk (`hasObjectStore` in payload.config.ts). Set one by accident
-and uploads go back to Supabase.
+`/admin/bulk-upload`:
 
-`DATABASE_SESSION_MODE` and `DATABASE_POOL_MAX` are Supabase pooler
-workarounds. `connectionString()` leaves non-Supabase hosts untouched, so they
-do nothing here and can be dropped.
+1. The spreadsheet: `theoneroof-products.xlsx` from the export folder
+2. The images: the export's `photos` folder, all 79
+3. Check: expect **34 ready, 0 with problems, 34 new, 79 images to upload**
+4. Import
 
-Migrations run at container start, not during the build — see the Dockerfile.
-
-## 6. Turn the image optimiser back on
-
-`next.config.ts` carries `images: { unoptimized: true }`, added on 2026-09-17
-when Vercel's 5,000/month transformation cap blanked every photo. The VPS runs
-`sharp` itself with no quota, so **remove that line once the site serves from
-here** and the photos go back to being resized and served as WebP per device.
-
-## 7. Verify on Coolify's temporary URL
-
-Before any DNS changes:
-
-- Product grid renders, photos load
-- A product page gallery works, thumbnails included
-- `/admin` logs in, and an upload writes to the volume
-- Restart the container and confirm the upload survived — this is the one that
-  catches a misconfigured volume, and it is the one people skip
+Then check the site on the temporary URL: grid, a product page, the Shorts
+rail. Restart the app container and check a photo still loads — that proves
+the volume from step 3 works.
 
 ## 8. Cutover — a separate sitting
 
-1. Lower the DNS TTL to 300s and wait for the old TTL to expire first.
-2. Point the A record at the VPS. DNS currently lives in **Vercel's**
-   nameservers, not at the registrar.
-3. Coolify requests the Let's Encrypt certificate automatically once the domain
-   resolves.
-4. Leave Vercel and Supabase running, untouched, for a week.
+Change only the **A record** for `theoneroof.co` to the VPS IP, in Vercel's DNS
+panel. Do not move nameservers: an A record can be switched back in minutes, a
+nameserver change takes hours in both directions.
 
-## 9. Backups — before you call this done
+Then add `theoneroof.co` (and `www.theoneroof.co`) as the app's domains in
+Coolify; it gets the Let's Encrypt certificate itself once DNS resolves.
 
-Coolify schedules Postgres backups; send them **off the box**. Back up the
-media volume too, it is the bulk of the data.
+## 9. After cutover
 
-Then restore one, into a scratch database, and look at it. An untested backup
-is not a backup, and this is now a single machine with no managed failover.
-
-**Do not delete the Supabase project until the VPS has run clean for seven days
-and a restore has actually been performed.**
+- Remove `unoptimized: true` from `next.config.ts` and redeploy. It was only
+  there because Vercel's image quota ran out; the VPS runs `sharp` with no
+  quota, so photos go back to being resized and served as WebP.
+- Hostinger's daily backups cover the whole machine. Add a Coolify scheduled
+  backup of the database too, so a single table can be restored without
+  rolling back the entire server.
+- Leave Vercel and Supabase running, untouched, for a week. Then delete them.
