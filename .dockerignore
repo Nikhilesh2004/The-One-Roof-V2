@@ -1,0 +1,9 @@
+# Coolify builds from a clean git clone, which has none of these. This file is
+# for anyone building the image on a laptop, where they do exist — above all
+# .env, which would otherwise be copied into the image with every secret in it.
+node_modules
+.next
+.env*
+.vercel
+.git
+*.tsbuildinfo

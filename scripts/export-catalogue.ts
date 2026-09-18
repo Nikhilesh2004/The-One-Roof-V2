@@ -1,45 +1,52 @@
 /**
- * Export the live shop into the bulk-upload format.
+ * Export a shop's products into the bulk-upload format.
  *
  *   npm run export:catalogue -- <output folder>
+ *   EXPORT_FROM=https://some-other-host npm run export:catalogue -- <folder>
  *
  * Writes, into the output folder:
  *
  *   products.json     one entry per product, in the template's column order
  *   photos/           every product photo, renamed <slug>-01.jpg, <slug>-02.jpg …
  *
- * and, into the repo, scripts/data/site-content.json — the sections, policy
- * pages and shop settings, which are not products and so have no place in the
- * spreadsheet. `npm run seed:site-content` loads that file into a fresh
- * database.
+ * then `python scripts/build-template.py <folder>/products.json <out.xlsx>`
+ * turns products.json into the spreadsheet Bulk upload takes.
  *
- * This is how the shop moves off Supabase: rather than copying the database,
- * it is re-imported through the same bulk upload the team will use for the
- * next thousand products, so the importer is proven on real data first.
+ * It reads the site's public API over HTTPS — the same data any visitor can
+ * see — so it needs no database access and no credentials, and works against
+ * whichever host EXPORT_FROM names. That is how the shop moved off Supabase:
+ * exported from the old site, re-imported into the new one through Bulk
+ * upload, so the importer was proven on real data first.
  *
- * Photos are downloaded at the `full` size (1600px) where Payload made one,
- * and the original otherwise. That is the largest size the site ever shows,
- * and it is what drops the 6.8 MB phone originals to something sane — the
- * importer regenerates every smaller size from it.
+ * Products only. Sections, policy pages and shop settings live in
+ * scripts/data/site-content.json, which is kept by hand — it carries fixes the
+ * old site never had (the Privacy Policy's hosting sentence), and re-exporting
+ * it would quietly put them back. `npm run seed:site-content` loads it.
  *
- * Read-only against the database. Writes only to the output folder and the
- * one JSON file.
+ * Photos come down at the `full` size (1600px) where one exists, and the
+ * original otherwise: the largest the site ever shows, and it keeps 6.8 MB
+ * phone originals out of the new shop. Bulk upload regenerates every smaller
+ * size from it.
  */
-import 'dotenv/config'
 import fs from 'fs'
 import path from 'path'
-import { getPayload } from 'payload'
-import config from '../src/payload.config'
 
-const SITE = process.env.EXPORT_FROM || 'https://www.theoneroof.co'
+const SITE = (process.env.EXPORT_FROM || 'https://www.theoneroof.co').replace(/\/$/, '')
 const out = path.resolve(process.argv[2] || 'theoneroof-export')
 const photosDir = path.join(out, 'photos')
 fs.mkdirSync(photosDir, { recursive: true })
 
 type Sized = { url?: string | null }
 type Media = { url?: string | null; filename?: string | null; sizes?: { full?: Sized } | null }
+type Doc = Record<string, any>
 
 const extOf = (name: string) => (path.extname(name) || '.jpg').toLowerCase()
+
+async function getJson<T>(url: string): Promise<T> {
+  const res = await fetch(`${SITE}${url}`)
+  if (!res.ok) throw new Error(`${res.status} from ${SITE}${url}`)
+  return (await res.json()) as T
+}
 
 async function download(url: string, dest: string) {
   const res = await fetch(new URL(url, SITE))
@@ -47,26 +54,15 @@ async function download(url: string, dest: string) {
   fs.writeFileSync(dest, Buffer.from(await res.arrayBuffer()))
 }
 
-const strip = <T extends Record<string, unknown>>(doc: T) => {
-  const { id: _id, createdAt: _c, updatedAt: _u, ...rest } = doc
-  return rest
-}
+const { docs: products } = await getJson<{ docs: Doc[] }>(
+  '/api/products?pagination=false&depth=1&sort=id',
+)
 
-const payload = await getPayload({ config })
-
-const { docs: products } = await payload.find({
-  collection: 'products',
-  depth: 1,
-  limit: 10000,
-  sort: 'id',
-  pagination: false,
-})
-
-const rows: Record<string, unknown>[] = []
+const rows: Doc[] = []
 let fetched = 0
 const failed: string[] = []
 
-for (const p of products as Record<string, any>[]) {
+for (const p of products) {
   const photos: string[] = []
   const media = (Array.isArray(p.photos) ? p.photos : []) as Media[]
 
@@ -83,7 +79,7 @@ for (const p of products as Record<string, any>[]) {
     }
   }
 
-  const row: Record<string, unknown> = {
+  const row: Doc = {
     title: p.title,
     slug: p.slug,
     thumbnail: '',
@@ -114,33 +110,10 @@ for (const p of products as Record<string, any>[]) {
 
 fs.writeFileSync(path.join(out, 'products.json'), JSON.stringify(rows, null, 2))
 
-// Sections, policy pages and shop settings: not products, so not in the sheet.
-const categories = await payload.find({ collection: 'categories', limit: 1000, pagination: false, sort: 'order' })
-const policies = await payload.find({ collection: 'policies', limit: 1000, pagination: false, sort: 'order' })
-const settings = await payload.findGlobal({ slug: 'settings', depth: 0 })
-
-const contentFile = path.resolve('scripts/data/site-content.json')
-fs.mkdirSync(path.dirname(contentFile), { recursive: true })
-fs.writeFileSync(
-  contentFile,
-  JSON.stringify(
-    {
-      exportedAt: new Date().toISOString(),
-      categories: categories.docs.map((d) => strip(d as unknown as Record<string, unknown>)),
-      policies: policies.docs.map((d) => strip(d as unknown as Record<string, unknown>)),
-      settings: strip(settings as unknown as Record<string, unknown>),
-    },
-    null,
-    2,
-  ),
-)
-
+console.log(`from:     ${SITE}`)
 console.log(`products: ${rows.length}`)
 console.log(`photos:   ${fetched} downloaded into ${photosDir}`)
-console.log(`sections: ${categories.docs.length}, policies: ${policies.docs.length}, settings: 1`)
-console.log(`site content -> ${contentFile}`)
 if (failed.length) {
   console.log(`\nPROBLEMS (${failed.length}):`)
   failed.forEach((f) => console.log('  ' + f))
 }
-process.exit(0)

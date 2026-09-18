@@ -49,70 +49,34 @@ Run it again any time to change the password.
 ### First-time setup
 
 ```bash
-npm run seed            # shop settings and the starting FAQ set
-npm run seed:sections   # the eight shop sections
-npm run seed:policies   # terms, privacy, returns, the two compliance pages
-npm run import:v1       # the 25 products and photos from the live v1 site
+npm run seed:site-content   # the eight sections, five policy pages, shop settings
 ```
 
-All four are safe to run more than once — they match on slug and update
-rather than duplicating. Each v1 product `id` becomes the v2 `slug`
-unchanged, so every product link already shared on WhatsApp still resolves
-after the switch.
+Then add products through **Admin → Bulk upload**. It is safe to run more than
+once: products match on their web address and update rather than duplicate.
 
 ---
 
-## Using the product manager
+## Adding products
 
-Everything the shop touches week to week is on the **first tab** of a
-product: name, photos, selling price, MRP, how many are left, section,
-description.
+Photos are taken on a phone, go through ChatGPT for the client's styling, and
+arrive as finished images. They come in with a spreadsheet:
 
-- **Adding a product** — Products → Create new. Drag photos straight in; the
-  first is the main picture. Payload makes the thumbnails.
-- **Changing stock** — open the product, change *How many are left*. At 0 it
-  shows as sold out and stays on the site.
-- **The Shorts row** — tick *Show in Shoppable Shorts* in the sidebar. Four
-  to eight products keeps that row moving well.
-- **Phone number, address, hours, home page words, delivery charge, FAQs** —
-  all under **Shop settings**. Nothing needs a code change.
-- **Label details** (country of origin, manufacturer) are on the second tab.
-  Read them off the tag rather than guessing — a wrong country of origin is
-  a legal problem, and it is the one field v1 got wrong.
+**Admin → 1 · Bulk upload.** Download the template from that page, fill one
+row per product, put every image in one folder, then pick both. Every row is
+checked before anything is saved — against the real sections, the photo
+library and the products already in the shop — and shown as new, update, or
+not imported with the reason. Uploading the same sheet again updates rather
+than duplicates, so fixing a price is: edit the sheet, upload it again.
 
-Changes appear on the storefront within a minute.
+A product can also have a **grid picture** — a separate image shown in the
+shop grid, before a customer clicks in. Leave it blank and the first photo is
+used.
 
----
+**Admin → 2 · Finish drafts** lists anything not yet on the website.
 
-## Photographing stock
-
-Two screens, two devices, one account signed in on both.
-
-**On the phone, in the shop — Admin → 1 · Take photos**
-
-Type what the thing is while it is still in your hand, photograph it, send.
-That is the whole job. No price, no section, no decisions about cropping.
-
-**On the tablet — Admin → 2 · Review & name**
-
-Photos appear on their own within a few seconds, already auto-edited. Tick
-the ones belonging to one product; the name typed at the shop is filled in
-for you. Add a price and section if you know them, and save. It becomes a
-**draft** — nothing reaches the website until you set it to Live.
-
-Each photo is straightened (phone photos carry their rotation in EXIF),
-levelled, and cropped to 4:5 so the catalogue grid lines up. Photos shot in
-portrait mode against the shop shelves keep that background; nothing here
-invents detail or replaces it. A listing has to show the thing a customer
-will actually receive.
-
-Photos are shrunk in the browser before upload, so four 7MB phone photos do
-not travel at full size on shop wifi. The saved file is processed again at
-full resolution — the preview is only a preview.
-
-**Then, back at the office — Admin → 3 · Finish drafts**
-
-Add the descriptions, check the label details, set each one to Live.
+The rules for filling in the sheet are in `docs/import/README.md`, written for
+the photo team rather than a developer.
 
 ---
 
@@ -138,18 +102,22 @@ src/
 
 ## Deploying
 
-A separate Vercel project from the v1 site, so the live shop is never at
-risk. Set the same environment variables there, and point the domain at it
-only once the catalogue has been checked in the preview URL.
+Runs on the shop's own server (Hostinger VPS) under Coolify, built from this
+repository with the `Dockerfile`. Step by step, including the move from the old
+hosting, in `docs/vps/runbook.md`.
+
+The build needs no database: every page renders when visited, so the image can
+be built in a container that cannot reach Postgres. Migrations run when the
+container starts, before the server takes a request.
 
 ---
 
 ## Database migrations
 
 The database is under migration control. Dev still pushes schema changes
-straight into Postgres for speed; production never does — `push` is off
-when `NODE_ENV=production`, and Vercel applies reviewed migration files
-instead.
+straight into Postgres for speed; production never does — `push` is off unless
+`PAYLOAD_DB_PUSH=true`, which only `npm run dev` sets — and the container
+applies reviewed migration files when it starts.
 
 **When you change a collection or a field:**
 
@@ -157,15 +125,9 @@ instead.
 npx payload migrate:create describe_the_change
 ```
 
-Read the SQL it generates in `src/migrations/`. Then it runs automatically
-on the next deploy, because `npm run build` is:
-
-```
-payload migrate && next build
-```
-
-Migrations land before Next renders a single page, so prerendering never
-queries a column that does not exist yet.
+Read the SQL it generates in `src/migrations/`. It runs automatically on the
+next deploy: the container starts with `npm run migrate && npm start`, so the
+schema is current before the first request.
 
 **Other commands**
 
@@ -173,30 +135,13 @@ queries a column that does not exist yet.
 | --- | --- |
 | `npm run migrate:status` | what has run and what is pending |
 | `npm run migrate` | apply pending migrations by hand |
-| `npm run build:local` | build without touching the database |
-| `npm run migrate:baseline` | one-off, for a database built by dev push |
 
 **Two things that will bite otherwise.**
 
 `payload migrate` asks an interactive yes/no if it finds the `dev` marker
-row that dev-mode push leaves behind. A Vercel build has no terminal to
-answer it, so the build hangs. That row has been removed; do not let dev
-push recreate it against production.
+row that dev-mode push leaves behind. The container has no terminal to answer
+it, so it would hang on start. Do not let dev push touch production.
 
 Never point a dev server at the production database. Dev push will reshape
 live tables with no migration and no record.
 
----
-
-## Keeping photos in step with v1
-
-While v1 is still the live site, photos reshot in the shop land there, not
-here.
-
-```bash
-npm run refresh:photos            # report what is behind
-npm run refresh:photos -- --apply # pull them across
-```
-
-It replaces the product's photos, deletes the ones it superseded, and
-touches nothing in v1's own storage.

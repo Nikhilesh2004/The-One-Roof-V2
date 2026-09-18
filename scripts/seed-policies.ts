@@ -102,7 +102,7 @@ If you then order, we keep what we need to fulfil and account for the sale: what
       },
       {
         heading: 'Who else sees anything',
-        body: `Our website is hosted by Vercel and its content is stored with Supabase. Neither is sent your bag or your saved items, because those never leave your browser.
+        body: `Our website runs on a server we rent from Hostinger, located in India, and its content is stored on that same server. Your bag and your saved items are never sent to it, because those never leave your browser.
 
 We do not sell or share customer information. We do not run advertising trackers on this site. [TO FILL: name any analytics or delivery partner you use.]`,
       },

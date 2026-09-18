@@ -54,3 +54,6 @@ node_modules/
 
 # Excel lock files
 ~$*
+
+# The example is safe to share: names only, no values.
+!.env.example

@@ -16,10 +16,10 @@ export const Media: CollectionConfig = {
   access: { read: publicRead, create: editorsOnly, update: editorsOnly, delete: editorsOnly },
   upload: {
     /*
-     * Without S3 credentials Payload writes uploads to disk. On the VPS that
-     * disk must be the mounted volume — the default sits inside the image and
-     * every redeploy would discard the shop's photography. Unset on Vercel,
-     * where the S3 adapter takes over and nothing touches local disk.
+     * Uploads are written to the server's own disk. In the container that
+     * disk must be the mounted volume (MEDIA_DIR=/app/media, set in the
+     * Dockerfile): the default sits inside the image, and every redeploy
+     * would throw the shop's photography away.
      */
     staticDir: process.env.MEDIA_DIR || undefined,
     mimeTypes: ['image/*'],
