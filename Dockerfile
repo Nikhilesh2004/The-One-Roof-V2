@@ -5,14 +5,19 @@
 # runtime for `payload migrate`, plus the tsx scripts (seed:site-content,
 # create-admin). Disk is 200GB; a larger image costs nothing and keeps every
 # maintenance command working inside the container.
-FROM node:22.17.0-alpine
+# Node 24 — what the laptop builds with and what the site ran on at Vercel, so
+# the server runs the version the code has actually been tested on.
+FROM node:24.12.0-alpine
 
 # sharp needs libc6-compat on alpine. It does the image resizing on this
 # server, with no monthly limit on how many photos it can resize.
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+# .npmrc has to arrive with the lockfile. It sets legacy-peer-deps, and the
+# lockfile was written under it: without it npm ci expects peer packages the
+# lockfile deliberately left out (yjs, monaco-editor, …) and refuses to install.
+COPY package.json package-lock.json .npmrc ./
 RUN npm ci
 
 COPY . .
