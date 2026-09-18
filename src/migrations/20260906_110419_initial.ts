@@ -1,6 +1,22 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+  /*
+   * Added 2026-09-18, for the move to the VPS. The first database this ran
+   * against already had the "payload" schema — created there by dev-mode push
+   * — so this migration never had to make it. A fresh Postgres has only
+   * "public", and every statement below fails with 'schema "payload" does not
+   * exist'.
+   *
+   * It has to live here, in the first migration, not in one of its own:
+   * Payload records each migration in payload.payload_migrations inside the
+   * same transaction, and that table is created further down this file. A
+   * separate earlier migration would have nowhere to record itself.
+   *
+   * IF NOT EXISTS keeps it a no-op anywhere the schema is already there.
+   */
+  await db.execute(sql`CREATE SCHEMA IF NOT EXISTS "payload";`)
+
   await db.execute(sql`
    CREATE TYPE "payload"."enum_products_occasions" AS ENUM('birthday', 'wedding', 'festival', 'everyday');
   CREATE TYPE "payload"."enum_products_status" AS ENUM('draft', 'live', 'hidden');

@@ -1,12 +1,21 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+  /*
+   * Generated, then corrected by hand. The generator drops photo_drafts WITH
+   * CASCADE first, which already removes the foreign key pointing at it from
+   * payload_locked_documents_rels — so its own next line, dropping that key
+   * by name, failed with 'constraint … does not exist' on every database.
+   * IF EXISTS on that drop, and on the index after it, makes the order safe.
+   * Found by replaying every migration against an empty Postgres before the
+   * VPS got to it.
+   */
   await db.execute(sql`
    ALTER TABLE "payload"."photo_drafts" DISABLE ROW LEVEL SECURITY;
   DROP TABLE "payload"."photo_drafts" CASCADE;
-  ALTER TABLE "payload"."payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_photo_drafts_fk";
+  ALTER TABLE "payload"."payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_photo_drafts_fk";
   
-  DROP INDEX "payload"."payload_locked_documents_rels_photo_drafts_id_idx";
+  DROP INDEX IF EXISTS "payload"."payload_locked_documents_rels_photo_drafts_id_idx";
   ALTER TABLE "payload"."products" ADD COLUMN "thumbnail_id" integer;
   ALTER TABLE "payload"."products" ADD CONSTRAINT "products_thumbnail_id_media_id_fk" FOREIGN KEY ("thumbnail_id") REFERENCES "payload"."media"("id") ON DELETE set null ON UPDATE no action;
   CREATE INDEX "products_thumbnail_idx" ON "payload"."products" USING btree ("thumbnail_id");
