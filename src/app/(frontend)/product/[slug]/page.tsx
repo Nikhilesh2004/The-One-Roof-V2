@@ -9,7 +9,7 @@ import { ProductCard } from '../../../../components/ProductCard'
 import { StickyBuyBar } from '../../../../components/StickyBuyBar'
 import { WishlistButton } from '../../../../components/WishlistButton'
 import { WhatsAppIcon } from '../../../../components/Icons'
-import { percentOff, rupees, skuOf, stockLabel, stockState, waLink } from '../../../../lib/format'
+import { percentOff, productUrl, rupees, skuOf, stockLabel, stockState, waLink } from '../../../../lib/format'
 import { imageAlt, imageUrl, mainPhoto, photosOf } from '../../../../lib/media'
 import { getProductBySlug, getProducts, getSettings } from '../../../../lib/payload'
 import type { Category } from '../../../../payload-types'
@@ -33,7 +33,9 @@ export async function generateMetadata({
   const product = await getProductBySlug(slug)
   if (!product) return { title: 'Product not found' }
 
-  const image = imageUrl(mainPhoto(product), 'full')
+  // `card`, not `full`: this is the picture in a WhatsApp link preview, and
+  // WhatsApp shows nothing at all for an image over ~600KB.
+  const image = imageUrl(mainPhoto(product), 'card')
   const price = product.price ?? 0
 
   return {
@@ -89,7 +91,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   const enquiry = waLink(
     settings.whatsappNumber,
-    `Hi The One Roof! I would like to enquire about: ${product.title} (${sku}), ${rupees(price)}. Is it available?`,
+    `Hi The One Roof! I would like to enquire about: ${product.title} (${sku}), ${rupees(price)}. Is it available?\n${productUrl(product.slug ?? '')}`,
   )
 
   const specs = [

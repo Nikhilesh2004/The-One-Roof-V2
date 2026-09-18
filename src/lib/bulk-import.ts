@@ -304,15 +304,23 @@ export function checkSheet(table: unknown[][], ctx: Context): Sheet {
 }
 
 /** Every image a set of rows will need uploaded, each once. */
-export function imagesNeeded(rows: CheckedRow[], library: Set<string>): string[] {
+export function imagesNeeded(rows: CheckedRow[], inLibrary: (name: string) => boolean): string[] {
   const need = new Set<string>()
   for (const r of rows) {
     for (const f of [...r.photos, ...(r.thumbnail ? [r.thumbnail] : [])]) {
-      if (!library.has(f)) need.add(f)
+      if (!inLibrary(f)) need.add(f)
     }
   }
   return [...need]
 }
+
+/**
+ * A filename with Payload's clash suffix taken off, for matching a picked
+ * image to its earlier upload. Payload saves a second `diya-01.jpg` as
+ * `diya-2.jpg` (it bumps the trailing number), so both fold to `diya.jpg`.
+ */
+export const stemOf = (name: string): string =>
+  name.toLowerCase().replace(/(-\d+)?(\.[^.]*)?$/, (_, _n, ext = '') => ext)
 
 /** The document body Payload expects for one row. */
 export function productData(row: CheckedRow, ids: Map<string, number | string>) {

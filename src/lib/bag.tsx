@@ -2,6 +2,8 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 
+import { productUrl } from './format'
+
 /**
  * The bag lives in the browser and nowhere else. There is no checkout to
  * protect and no order to store — the bag's only job is to become a
@@ -152,13 +154,20 @@ export function useBag(): BagContext {
  * line. Both are someone who has decided to buy, so it says so — the product
  * page's "Enquire on WhatsApp" is the one that asks whether something is
  * available.
+ *
+ * Each line carries the product's link, so the shop sees the product's
+ * picture: WhatsApp previews the first link in a message. With several items
+ * only the first gets a picture; the rest are one tap away.
  */
-export function bagMessage(lines: Pick<BagLine, 'title' | 'price' | 'qty'>[], total: number): string {
+export function bagMessage(
+  lines: Pick<BagLine, 'slug' | 'title' | 'price' | 'qty'>[],
+  total: number,
+): string {
   const items = lines.map(
     (l, i) =>
       `${i + 1}. ${l.title} — ${l.qty} × ₹${l.price.toLocaleString('en-IN')} = ₹${(
         l.price * l.qty
-      ).toLocaleString('en-IN')}`,
+      ).toLocaleString('en-IN')}\n${productUrl(l.slug)}`,
   )
   return [
     'Hi The One Roof! I would like to buy:',

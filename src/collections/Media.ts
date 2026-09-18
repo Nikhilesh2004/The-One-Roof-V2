@@ -26,7 +26,19 @@ export const Media: CollectionConfig = {
     focalPoint: true,
     imageSizes: [
       { name: 'thumb', width: 400, height: 400, position: 'centre' },
-      { name: 'card', width: 800, height: 1000, position: 'centre' },
+      /*
+       * Always a JPEG, whatever was uploaded. This is also the picture
+       * WhatsApp shows when a product link is sent, and WhatsApp drops
+       * previews over ~600KB: an 800px PNG out of ChatGPT is well past that,
+       * the same picture as a JPEG is ~100KB.
+       */
+      {
+        name: 'card',
+        width: 800,
+        height: 1000,
+        position: 'centre',
+        formatOptions: { format: 'jpeg', options: { quality: 82 } },
+      },
       { name: 'full', width: 1600, height: undefined },
     ],
   },

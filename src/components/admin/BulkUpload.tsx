@@ -9,6 +9,7 @@ import {
   checkSheet,
   imagesNeeded,
   productData,
+  stemOf,
   type CheckedRow,
   type Section,
 } from '../../lib/bulk-import'
@@ -26,6 +27,12 @@ import {
  * web address and updated rather than duplicated, and a photo already in the
  * library is reused rather than uploaded again — so an import cut short by a
  * dropped connection is finished by simply running it again.
+ *
+ * "Already in the library" means the same name and the same size. A picked
+ * image that shares a name with a library photo but differs in size is a new
+ * picture (a reshoot, or the ChatGPT-cleaned version), so it is uploaded and
+ * the product switched to it. The old photo stays in the library, untouched,
+ * for any other product still using it.
  *
  * Everything goes through Payload's own REST API with the logged-in session,
  * so the collection's access rules and hooks apply exactly as they would to a
@@ -89,7 +96,7 @@ async function pool<T>(items: T[], n: number, work: (item: T) => Promise<void>) 
 export function BulkUpload() {
   const [sections, setSections] = useState<Section[] | null>(null)
   const [existing, setExisting] = useState<Map<string, Ref>>(new Map())
-  const [library, setLibrary] = useState<Map<string, Ref>>(new Map())
+  const [library, setLibrary] = useState<Map<string, { id: Ref; size: number }>>(new Map())
   const [loadError, setLoadError] = useState('')
 
   const [sheetFile, setSheetFile] = useState<File | null>(null)
@@ -108,11 +115,13 @@ export function BulkUpload() {
       const [cats, prods, media] = await Promise.all([
         api<{ docs: any[] }>('/api/categories?pagination=false&depth=0&sort=order'),
         api<{ docs: any[] }>('/api/products?pagination=false&depth=0&select[slug]=true'),
-        api<{ docs: any[] }>('/api/media?pagination=false&depth=0&select[filename]=true'),
+        api<{ docs: any[] }>('/api/media?pagination=false&depth=0&select[filename]=true&select[filesize]=true'),
       ])
       setSections(cats.docs.map((c) => ({ id: c.id, slug: c.slug, name: c.name })))
       setExisting(new Map(prods.docs.filter((p) => p.slug).map((p) => [p.slug, p.id])))
-      setLibrary(new Map(media.docs.filter((m) => m.filename).map((m) => [m.filename, m.id])))
+      setLibrary(
+        new Map(media.docs.filter((m) => m.filename).map((m) => [m.filename, { id: m.id, size: m.filesize }])),
+      )
       setLoadError('')
     } catch (e) {
       setLoadError((e as Error).message)
@@ -152,6 +161,20 @@ export function BulkUpload() {
   // ── Checking ─────────────────────────────────────────────────────────
   const libraryNames = useMemo(() => new Set(library.keys()), [library])
 
+  // The library photo an image name stands for, when it needs no upload: the
+  // same file already there, under its own name or a clash-renamed one.
+  const inLibrary = useMemo(() => {
+    const bySame = new Map<string, Ref>()
+    for (const [name, m] of library) bySame.set(`${stemOf(name)}|${m.size}`, m.id)
+    return (name: string): Ref | undefined => {
+      const file = images.get(name)
+      if (!file) return library.get(name)?.id
+      const same = library.get(name)
+      if (same?.size === file.size) return same.id
+      return bySame.get(`${stemOf(name)}|${file.size}`)
+    }
+  }, [library, images])
+
   const sheet = useMemo(() => {
     if (!table || !sections) return null
     return checkSheet(table, {
@@ -164,7 +187,8 @@ export function BulkUpload() {
 
   const ready = sheet?.rows.filter((r) => !r.errors.length) ?? []
   const broken = sheet?.rows.filter((r) => r.errors.length) ?? []
-  const toUpload = sheet ? imagesNeeded(ready, libraryNames) : []
+  const toUpload = sheet ? imagesNeeded(ready, (n) => inLibrary(n) !== undefined) : []
+  const replacing = toUpload.filter((n) => library.has(n)).length
 
   // Local previews for picked images; library images come from the server.
   const previews = useRef(new Map<string, string>())
@@ -204,7 +228,11 @@ export function BulkUpload() {
       }
     }
 
-    const ids = new Map<string, Ref>(library)
+    const ids = new Map<string, Ref>()
+    for (const name of altFor.keys()) {
+      const id = inLibrary(name)
+      if (id !== undefined) ids.set(name, id)
+    }
     const failedImages = new Map<string, string>()
     let uploaded = 0
     setProgress({ label: 'Uploading photos', done: 0, total: toUpload.length })
@@ -382,6 +410,7 @@ export function BulkUpload() {
                 <Chip value={ready.filter((r) => r.action === 'create').length} label="new" />
                 <Chip value={ready.filter((r) => r.action === 'update').length} label="updates" />
                 <Chip value={toUpload.length} label="images to upload" />
+                {replacing > 0 && <Chip value={replacing} label="replace photos already on the site" />}
                 <label className="tor-bu__toggle">
                   <input type="checkbox" checked={onlyProblems} onChange={(e) => setOnlyProblems(e.target.checked)} />
                   Show only rows with notes

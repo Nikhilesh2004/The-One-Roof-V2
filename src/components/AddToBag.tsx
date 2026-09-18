@@ -100,7 +100,7 @@ export function BuyNow({
 }) {
   if (item.stock <= 0) return null
 
-  const message = bagMessage([{ title: item.title, price: item.price, qty: 1 }], item.price)
+  const message = bagMessage([{ slug: item.slug, title: item.title, price: item.price, qty: 1 }], item.price)
 
   return (
     <a
