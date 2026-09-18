@@ -191,7 +191,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
             <div id="buy-actions" className="mt-7 flex flex-wrap items-center gap-3">
               <AddToBag item={bagItem} />
-              <BuyNow item={bagItem} />
+              <BuyNow item={bagItem} whatsappNumber={settings.whatsappNumber} />
               <a href={enquiry} target="_blank" rel="noopener noreferrer" className="btn btn-wa">
                 <WhatsAppIcon />
                 Enquire on WhatsApp
