@@ -3,7 +3,8 @@
 import React from 'react'
 
 import type { BagLine } from '../lib/bag'
-import { useBag } from '../lib/bag'
+import { bagMessage, useBag } from '../lib/bag'
+import { waLink } from '../lib/format'
 
 type Props = {
   item: Omit<BagLine, 'qty'>
@@ -80,29 +81,35 @@ export function AddToBag({ item, className = '', label }: Props) {
   )
 }
 
-/** Adds it and opens the bag, for someone who has finished choosing. */
+/**
+ * Straight to WhatsApp with an order for this one product.
+ *
+ * It used to add the product to the bag and open it, which left the customer
+ * one more tap from the shop — and that tap sent an enquiry. Now it is the
+ * order itself: one of this, at this price, sent as a purchase. The bag is
+ * left alone, so anything already in it is still there afterwards.
+ */
 export function BuyNow({
   item,
+  whatsappNumber,
   className = '',
 }: {
   item: Omit<BagLine, 'qty'>
+  whatsappNumber: string
   className?: string
 }) {
-  const { add, setOpen, lines } = useBag()
-  const inBag = lines.find((l) => l.slug === item.slug)?.qty ?? 0
-
   if (item.stock <= 0) return null
 
+  const message = bagMessage([{ title: item.title, price: item.price, qty: 1 }], item.price)
+
   return (
-    <button
-      type="button"
-      onClick={() => {
-        if (inBag === 0) add(item, 1, { open: true })
-        else setOpen(true)
-      }}
+    <a
+      href={waLink(whatsappNumber, message)}
+      target="_blank"
+      rel="noopener noreferrer"
       className={`btn btn-ghost ${className}`}
     >
-      {inBag > 0 ? 'Go to bag' : 'Buy now'}
-    </button>
+      Buy now
+    </a>
   )
 }

@@ -145,8 +145,15 @@ export function useBag(): BagContext {
   return ctx
 }
 
-/** The whole bag, written out as the message the shop will receive. */
-export function bagMessage(lines: BagLine[], total: number): string {
+/**
+ * An order, written out as the message the shop will receive.
+ *
+ * Used by the bag ("Order this bag on WhatsApp") and by Buy now, with one
+ * line. Both are someone who has decided to buy, so it says so — the product
+ * page's "Enquire on WhatsApp" is the one that asks whether something is
+ * available.
+ */
+export function bagMessage(lines: Pick<BagLine, 'title' | 'price' | 'qty'>[], total: number): string {
   const items = lines.map(
     (l, i) =>
       `${i + 1}. ${l.title} — ${l.qty} × ₹${l.price.toLocaleString('en-IN')} = ₹${(
@@ -154,12 +161,12 @@ export function bagMessage(lines: BagLine[], total: number): string {
       ).toLocaleString('en-IN')}`,
   )
   return [
-    'Hi The One Roof! I would like to enquire about these items:',
+    'Hi The One Roof! I would like to buy:',
     '',
     ...items,
     '',
     `Total: ₹${total.toLocaleString('en-IN')}`,
     '',
-    'Please confirm availability and delivery. Thank you!',
+    'Please confirm my order and delivery. Thank you!',
   ].join('\n')
 }
