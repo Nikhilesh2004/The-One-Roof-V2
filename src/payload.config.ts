@@ -41,6 +41,14 @@ export default buildConfig({
             description: 'Add or update many products at once from the Excel template.',
           },
         },
+        replacePhotos: {
+          Component: '/components/admin/BulkUploadView#ReplacePhotosView',
+          path: '/replace-photos',
+          meta: {
+            title: 'Replace photos',
+            description: 'Give existing products new photos from the Excel template.',
+          },
+        },
       },
     },
   },

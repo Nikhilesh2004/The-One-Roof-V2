@@ -45,7 +45,7 @@ type Phase = 'pick' | 'working' | 'done'
 
 const IMAGE_WORKERS = 3
 
-async function api<T>(url: string, init?: RequestInit): Promise<T> {
+export async function api<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, { credentials: 'include', ...init })
   const body = await res.json().catch(() => ({}))
   if (!res.ok) throw new Error(explain(body) || `The server said ${res.status}.`)
@@ -64,7 +64,7 @@ function explain(body: any): string {
   return out.join(' ')
 }
 
-async function readTable(file: File): Promise<unknown[][]> {
+export async function readTable(file: File): Promise<unknown[][]> {
   if (/\.csv$/i.test(file.name)) {
     return new Promise((resolve, reject) =>
       Papa.parse<unknown[]>(file, {
@@ -84,7 +84,7 @@ async function readTable(file: File): Promise<unknown[][]> {
 }
 
 /** Run `work` over `items`, `n` at a time. */
-async function pool<T>(items: T[], n: number, work: (item: T) => Promise<void>) {
+export async function pool<T>(items: T[], n: number, work: (item: T) => Promise<void>) {
   let next = 0
   await Promise.all(
     Array.from({ length: Math.min(n, items.length) }, async () => {
@@ -341,48 +341,13 @@ export function BulkUpload() {
           </label>
         </Pick>
 
-        <Pick
-          n="2"
-          title="The images"
+        <ImagesPick
+          count={images.size}
           hint="Every photo and thumbnail named in the sheet"
-          done={images.size ? `${images.size} image${images.size === 1 ? '' : 's'} picked` : ''}
-        >
-          <div
-            className="tor-bu__drop"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault()
-              addImages(e.dataTransfer.files)
-            }}
-          >
-            <label className="tor-bu__file">
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={(e) => addImages(e.target.files)}
-                disabled={phase === 'working'}
-              />
-              Choose images
-            </label>
-            <label className="tor-bu__file">
-              <input
-                type="file"
-                // A whole folder in one go — the photo team's folder as sent.
-                {...({ webkitdirectory: '', directory: '' } as Record<string, string>)}
-                onChange={(e) => addImages(e.target.files)}
-                disabled={phase === 'working'}
-              />
-              Choose a folder
-            </label>
-            <span className="tor-bu__or">or drop them here</span>
-          </div>
-          {images.size > 0 && phase !== 'working' && (
-            <button type="button" className="tor-bu__link" onClick={() => setImages(new Map())}>
-              Clear images
-            </button>
-          )}
-        </Pick>
+          busy={phase === 'working'}
+          onAdd={addImages}
+          onClear={() => setImages(new Map())}
+        />
       </div>
 
       {readError && <p className="tor-bu__alert">{readError}</p>}
@@ -538,7 +503,7 @@ export function BulkUpload() {
   )
 }
 
-function Pick({
+export function Pick({
   n,
   title,
   hint,
@@ -565,7 +530,55 @@ function Pick({
   )
 }
 
-function Chip({ value, label, tone }: { value: number; label: string; tone?: 'good' | 'bad' }) {
+export function ImagesPick({
+  count,
+  hint,
+  busy,
+  onAdd,
+  onClear,
+}: {
+  count: number
+  hint: string
+  busy: boolean
+  onAdd: (files: FileList | null) => void
+  onClear: () => void
+}) {
+  return (
+    <Pick n="2" title="The images" hint={hint} done={count ? `${count} image${count === 1 ? '' : 's'} picked` : ''}>
+      <div
+        className="tor-bu__drop"
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault()
+          onAdd(e.dataTransfer.files)
+        }}
+      >
+        <label className="tor-bu__file">
+          <input type="file" accept="image/*" multiple onChange={(e) => onAdd(e.target.files)} disabled={busy} />
+          Choose images
+        </label>
+        <label className="tor-bu__file">
+          <input
+            type="file"
+            // A whole folder in one go — the photo team's folder as sent.
+            {...({ webkitdirectory: '', directory: '' } as Record<string, string>)}
+            onChange={(e) => onAdd(e.target.files)}
+            disabled={busy}
+          />
+          Choose a folder
+        </label>
+        <span className="tor-bu__or">or drop them here</span>
+      </div>
+      {count > 0 && !busy && (
+        <button type="button" className="tor-bu__link" onClick={onClear}>
+          Clear images
+        </button>
+      )}
+    </Pick>
+  )
+}
+
+export function Chip({ value, label, tone }: { value: number; label: string; tone?: 'good' | 'bad' }) {
   return (
     <span className={`tor-bu__chip${tone ? ` is-${tone}` : ''}`}>
       <b>{value}</b> {label}
@@ -573,7 +586,7 @@ function Chip({ value, label, tone }: { value: number; label: string; tone?: 'go
   )
 }
 
-function Progress({ label, done, total }: { label: string; done: number; total: number }) {
+export function Progress({ label, done, total }: { label: string; done: number; total: number }) {
   const pct = total ? Math.round((done / total) * 100) : 100
   return (
     <div className="tor-bu__progress">

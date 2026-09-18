@@ -161,13 +161,7 @@ export function checkSheet(table: unknown[][], ctx: Context): Sheet {
   }
   if (unknown.length) fileWarnings.push(`Ignored columns: ${unknown.join(', ')}.`)
 
-  // Exact filename first; if that fails, a unique case-insensitive match.
-  const exact = new Set(ctx.files)
-  const folded = new Map<string, string[]>()
-  for (const f of ctx.files) {
-    const k = f.toLowerCase()
-    folded.set(k, [...(folded.get(k) ?? []), f])
-  }
+  const findFile = fileFinder(ctx)
 
   const sectionBy = new Map<string, Section>()
   for (const s of ctx.sections) {
@@ -201,28 +195,7 @@ export function checkSheet(table: unknown[][], ctx: Context): Sheet {
       seen.set(slug, line)
     }
 
-    // A photo is fine if it was picked now, or is already in the library
-    // from an earlier run. Anything else cannot be attached.
-    const resolve = (name: string, label: string): string | null => {
-      if (exact.has(name) || ctx.library.has(name)) return name
-      const near = folded.get(name.toLowerCase())
-      if (near?.length === 1) {
-        warnings.push(`${label}: using ${near[0]} for ${name} (capitals differ).`)
-        return near[0]
-      }
-      errors.push(`${label}: ${name} is not among the images you picked.`)
-      return null
-    }
-
-    const photos: string[] = []
-    for (const col of PHOTO_COLUMNS) {
-      const name = str(cell[col])
-      if (!name) continue
-      const got = resolve(name, col)
-      if (got) photos.push(got)
-    }
-    const thumbName = str(cell.thumbnail)
-    const thumbnail = thumbName ? resolve(thumbName, 'thumbnail') : null
+    const { photos, thumbnail } = rowImages(cell, findFile, errors, warnings)
 
     const price = num(cell.price)
     if (price === 'bad') errors.push(`Price "${str(cell.price)}" is not a number.`)
@@ -297,6 +270,133 @@ export function checkSheet(table: unknown[][], ctx: Context): Sheet {
       action: existingId !== undefined ? 'update' : 'create',
       existingId,
     })
+  })
+
+  if (!rows.length && !fileErrors.length) fileErrors.push('The sheet has headings but no products.')
+  return { rows, fileErrors, fileWarnings }
+}
+
+// ── Images ────────────────────────────────────────────────────────────
+
+/**
+ * A photo is fine if it was picked now, or is already in the library from an
+ * earlier run. Exact filename first; failing that, a unique match ignoring
+ * capitals, with a warning. Anything else cannot be attached.
+ */
+function fileFinder(ctx: Pick<Context, 'files' | 'library'>) {
+  const exact = new Set(ctx.files)
+  const folded = new Map<string, string[]>()
+  for (const f of ctx.files) {
+    const k = f.toLowerCase()
+    folded.set(k, [...(folded.get(k) ?? []), f])
+  }
+  return (name: string, label: string, errors: string[], warnings: string[]): string | null => {
+    if (exact.has(name) || ctx.library.has(name)) return name
+    const near = folded.get(name.toLowerCase())
+    if (near?.length === 1) {
+      warnings.push(`${label}: using ${near[0]} for ${name} (capitals differ).`)
+      return near[0]
+    }
+    errors.push(`${label}: ${name} is not among the images you picked.`)
+    return null
+  }
+}
+
+function rowImages(
+  cell: Record<string, unknown>,
+  findFile: ReturnType<typeof fileFinder>,
+  errors: string[],
+  warnings: string[],
+) {
+  const photos: string[] = []
+  for (const col of PHOTO_COLUMNS) {
+    const name = str(cell[col])
+    if (!name) continue
+    const got = findFile(name, col, errors, warnings)
+    if (got) photos.push(got)
+  }
+  const thumbName = str(cell.thumbnail)
+  const thumbnail = thumbName ? findFile(thumbName, 'thumbnail', errors, warnings) : null
+  return { photos, thumbnail }
+}
+
+// ── Replace photos ────────────────────────────────────────────────────
+
+export type ReplaceRow = {
+  line: number
+  title: string
+  slug: string
+  photos: string[]
+  thumbnail: string | null
+  /** The images in this row that were picked now, and will be uploaded. */
+  fresh: string[]
+  existingId?: number | string
+  errors: string[]
+  warnings: string[]
+}
+
+/**
+ * The same template, read for one job only: give existing products new
+ * photos. Only the product's name or web address and the image columns are
+ * read. Price, stock, text and the rest are ignored, so an old export can be
+ * reused without undoing edits made in the CMS since.
+ *
+ * The sheet says what the product's photos are afterwards, in order. A photo
+ * named but not picked is kept from the library, so a row can swap photo_1
+ * alone. A blank thumbnail clears the grid picture, so the grid falls back
+ * to the new photo_1, as the template says.
+ */
+export function checkReplaceSheet(
+  table: unknown[][],
+  ctx: Pick<Context, 'existing' | 'files' | 'library'>,
+): { rows: ReplaceRow[]; fileErrors: string[]; fileWarnings: string[] } {
+  const fileErrors: string[] = []
+  const fileWarnings: string[] = []
+  if (!table.length) return { rows: [], fileErrors: ['The sheet is empty.'], fileWarnings }
+
+  const { map } = readHeaders(table[0])
+  if (!map.includes('photo_1') || !(map.includes('slug') || map.includes('title'))) {
+    fileErrors.push(
+      'The sheet needs a photo_1 column, and a slug or title column to find each product. ' +
+        'Use the template from the CMS so the headings match.',
+    )
+    return { rows: [], fileErrors, fileWarnings }
+  }
+
+  const findFile = fileFinder(ctx)
+  const picked = new Set(ctx.files)
+  const seen = new Map<string, number>()
+  const rows: ReplaceRow[] = []
+
+  table.slice(1).forEach((cells, i) => {
+    const line = i + 2
+    if (cells.every(blank)) return
+
+    const cell: Record<string, unknown> = {}
+    map.forEach((col, j) => {
+      if (col) cell[col] = cells[j]
+    })
+
+    const errors: string[] = []
+    const warnings: string[] = []
+
+    const title = str(cell.title)
+    const slug = slugify(str(cell.slug) || title)
+    const existingId = slug ? ctx.existing.get(slug) : undefined
+    if (!slug) errors.push('No slug or product name, so the product cannot be found.')
+    else if (existingId === undefined) {
+      errors.push(`No product at /product/${slug} in the shop. Use Bulk upload to add new products.`)
+    }
+    if (slug && seen.has(slug)) errors.push(`Same product as row ${seen.get(slug)}.`)
+    else if (slug) seen.set(slug, line)
+
+    const { photos, thumbnail } = rowImages(cell, findFile, errors, warnings)
+    if (!photos.length && !errors.length) errors.push('No photos listed. A product cannot be left without photos.')
+
+    const fresh = [...new Set([...photos, ...(thumbnail ? [thumbnail] : [])].filter((f) => picked.has(f)))]
+    if (photos.length && !fresh.length) errors.push('None of this row’s images were picked, so there is nothing to replace.')
+
+    rows.push({ line, title: title || slug, slug, photos, thumbnail, fresh, existingId, errors, warnings })
   })
 
   if (!rows.length && !fileErrors.length) fileErrors.push('The sheet has headings but no products.')
