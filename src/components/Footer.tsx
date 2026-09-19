@@ -205,10 +205,10 @@ export function Footer({
           <div className="mx-auto flex max-w-[1240px] flex-col items-center gap-3 text-center">
             <Credit url={settings.agencyUrl} label={settings.agencyName}>
               <Image
-                src="/aalitech-mark.webp"
+                src="/aalitech-mark.png"
                 alt={settings.agencyName}
-                width={320}
-                height={284}
+                width={123}
+                height={112}
                 sizes="48px"
                 className="h-auto w-12"
               />
