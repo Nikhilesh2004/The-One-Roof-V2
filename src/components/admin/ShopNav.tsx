@@ -51,7 +51,7 @@ export async function ShopNav() {
         badge={drafts || undefined}
       />
       <Step href="/admin/collections/products" n="3" title="All products" hint="Edit one, or filter by section" />
-      <Step href="/admin/unused-photos" n="4" title="Unused photos" hint="Delete photos no product uses" />
+      <Step href="/admin/unused-photos" n="4" title="Unused photos" hint="Delete photos and videos no product uses" />
 
       <Link href="/admin/logout" className="tor-nav__logout">
         Log out

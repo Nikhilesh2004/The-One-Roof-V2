@@ -75,6 +75,19 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     }))
     .filter((s) => s.url)
 
+  // The video goes second, after the first photo: the grid, WhatsApp and
+  // search already show photo 1, so the page opens on the same picture.
+  const video = typeof product.video === 'object' ? product.video : null
+  if (video?.url) {
+    shots.splice(Math.min(1, shots.length), 0, {
+      url: video.url,
+      thumbUrl: shots[0]?.thumbUrl,
+      alt: `${product.title} — video`,
+      video: true,
+      poster: shots[0]?.url,
+    })
+  }
+
   const related = category
     ? (await getProducts({ categoryId: category.id, limit: 5 })).filter((p) => p.id !== product.id)
     : []

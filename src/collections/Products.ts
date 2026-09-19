@@ -113,6 +113,16 @@ export const Products: CollectionConfig = {
               },
             },
             {
+              name: 'video',
+              type: 'upload',
+              relationTo: 'videos',
+              label: 'Video',
+              admin: {
+                description:
+                  'Optional. Shown second on the product page, right after the first photo, and plays by itself (silent). MP4, vertical 9:16, 15–30 seconds.',
+              },
+            },
+            {
               type: 'row',
               fields: [
                 {

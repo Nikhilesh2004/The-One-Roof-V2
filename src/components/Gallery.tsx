@@ -10,8 +10,49 @@ import { CloseIcon } from './Icons'
  * `thumbUrl` is the 400px `thumb`, for the strip of 64px buttons — without it
  * each button downloads a 1600px photo to paint a thumbnail, which the image
  * optimiser used to hide and no longer does.
+ *
+ * A `video` shot is the product video; `poster` is what shows before it
+ * starts (photo 1).
  */
-export type Shot = { url: string; thumbUrl?: string; alt: string }
+export type Shot = { url: string; thumbUrl?: string; alt: string; video?: boolean; poster?: string }
+
+/**
+ * The product video, playing the way Amazon's does: on its own the moment it
+ * is shown, silent, looping, with controls to unmute or pause.
+ *
+ * Browsers only allow a video to start by itself when it is muted, and iPhones
+ * only play it inside the page with playsInline. It is only mounted while its
+ * slide is showing, so a visitor who never swipes to it never downloads it.
+ */
+function ProductVideo({ shot }: { shot: Shot }) {
+  return (
+    <video
+      key={shot.url}
+      src={shot.url}
+      poster={shot.poster}
+      aria-label={shot.alt}
+      autoPlay
+      muted
+      loop
+      playsInline
+      controls
+      preload="auto"
+      className="absolute inset-0 h-full w-full bg-black object-contain"
+    />
+  )
+}
+
+function PlayBadge() {
+  return (
+    <span className="absolute inset-0 grid place-items-center bg-black/25">
+      <span className="grid h-8 w-8 place-items-center rounded-full bg-black/60 text-white">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M7 4.5v15l13-7.5z" />
+        </svg>
+      </span>
+    </span>
+  )
+}
 
 function Chevron({ dir }: { dir: 'left' | 'right' }) {
   return (
@@ -110,18 +151,23 @@ export function Gallery({ shots }: { shots: Shot[] }) {
           // Clicking opens the photo full screen, on any device. There is
           // no magnify-under-the-cursor any more: it moved the picture
           // about while people were trying to look at it.
-          onClick={() => setZoomed(true)}
-          className="group relative aspect-4/5 cursor-zoom-in overflow-hidden bg-[var(--panel)]"
+          // The video has its own controls; a click there must not open full screen.
+          onClick={() => !shot.video && setZoomed(true)}
+          className={`group relative aspect-4/5 overflow-hidden bg-[var(--panel)] ${shot.video ? '' : 'cursor-zoom-in'}`}
         >
-          <Image
-            key={shot.url}
-            src={shot.url}
-            alt={shot.alt}
-            fill
-            priority
-            sizes="(min-width: 1024px) 560px, 92vw"
-            className="object-cover"
-          />
+          {shot.video ? (
+            <ProductVideo shot={shot} />
+          ) : (
+            <Image
+              key={shot.url}
+              src={shot.url}
+              alt={shot.alt}
+              fill
+              priority
+              sizes="(min-width: 1024px) 560px, 92vw"
+              className="object-cover"
+            />
+          )}
 
           {count > 1 && (
             <>
@@ -148,7 +194,8 @@ export function Gallery({ shots }: { shots: Shot[] }) {
                 <Chevron dir="right" />
               </button>
 
-              <span className="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/55 px-3 py-1 text-[11px] text-white tabular-nums backdrop-blur-sm">
+              {/* At the top over the video, clear of its play and volume bar. */}
+              <span className={`absolute ${shot.video ? 'top-3' : 'bottom-3'} left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/55 px-3 py-1 text-[11px] text-white tabular-nums backdrop-blur-sm`}>
                 {active + 1} / {count}
               </span>
             </>
@@ -162,7 +209,7 @@ export function Gallery({ shots }: { shots: Shot[] }) {
                 key={s.url}
                 type="button"
                 onClick={() => setActive(i)}
-                aria-label={`Show photo ${i + 1} of ${count}`}
+                aria-label={s.video ? 'Play the video' : `Show photo ${i + 1} of ${count}`}
                 aria-current={i === active}
                 className={`relative h-20 w-16 flex-none overflow-hidden bg-[var(--panel)] transition-[box-shadow] ${
                   i === active
@@ -170,14 +217,21 @@ export function Gallery({ shots }: { shots: Shot[] }) {
                     : 'ring-1 ring-[var(--line)] hover:ring-[var(--line-2)]'
                 }`}
               >
-                <Image src={s.thumbUrl || s.url} alt="" fill sizes="64px" className="object-cover" />
+                {s.video ? (
+                  <>
+                    {s.thumbUrl && <Image src={s.thumbUrl} alt="" fill sizes="64px" className="object-cover" />}
+                    <PlayBadge />
+                  </>
+                ) : (
+                  <Image src={s.thumbUrl || s.url} alt="" fill sizes="64px" className="object-cover" />
+                )}
               </button>
             ))}
           </div>
         )}
 
         <p className="text-[11.5px] text-[var(--muted)]">
-          Click a photo to see it full screen. Use the arrows to move between photos.
+          Click a photo to see it full screen. Use the arrows to move between photos{shots.some((s) => s.video) ? ' and the video' : ''}.
         </p>
       </div>
 
@@ -213,7 +267,11 @@ export function Gallery({ shots }: { shots: Shot[] }) {
               touchStart.current = null
             }}
           >
-            <Image src={shot.url} alt={shot.alt} fill sizes="100vw" className="object-contain" />
+            {shot.video ? (
+              <ProductVideo shot={shot} />
+            ) : (
+              <Image src={shot.url} alt={shot.alt} fill sizes="100vw" className="object-contain" />
+            )}
           </div>
 
           {count > 1 && (

@@ -40,6 +40,7 @@ export const KNOWN_COLUMNS = [
   'title',
   ...PHOTO_COLUMNS,
   'thumbnail',
+  'video',
   'price',
   'mrp',
   'stock',
@@ -61,6 +62,7 @@ export type ProductRow = {
   slug: string
   photos: string[]
   thumbnail: string | null
+  video: string | null
   price: number | null
   mrp: number | null
   stock: number | null
@@ -92,7 +94,7 @@ export type Context = {
   existing: Map<string, number | string>
   /** Filenames of the images picked alongside the sheet. */
   files: string[]
-  /** Filenames already in the photo library, which need no re-upload. */
+  /** Filenames already in the photo and video libraries, which need no re-upload. */
   library: Set<string>
 }
 
@@ -120,6 +122,9 @@ const num = (v: unknown): number | null | 'bad' => {
 }
 
 const yes = (v: unknown) => /^(yes|y|true|1)$/i.test(str(v))
+
+/** Decided by the name, which is all a sheet has: the same rule the uploader routes by. */
+export const isVideo = (name: string) => /\.(mp4|webm|mov)$/i.test(name)
 
 // ── Headers ───────────────────────────────────────────────────────────
 
@@ -195,7 +200,7 @@ export function checkSheet(table: unknown[][], ctx: Context): Sheet {
       seen.set(slug, line)
     }
 
-    const { photos, thumbnail } = rowImages(cell, findFile, errors, warnings)
+    const { photos, thumbnail, video } = rowImages(cell, findFile, errors, warnings)
 
     const price = num(cell.price)
     if (price === 'bad') errors.push(`Price "${str(cell.price)}" is not a number.`)
@@ -256,6 +261,7 @@ export function checkSheet(table: unknown[][], ctx: Context): Sheet {
       slug,
       photos,
       thumbnail,
+      video,
       price: typeof price === 'number' ? price : null,
       mrp: typeof mrp === 'number' ? mrp : null,
       stock: typeof stock === 'number' ? stock : null,
@@ -297,7 +303,7 @@ function fileFinder(ctx: Pick<Context, 'files' | 'library'>) {
       warnings.push(`${label}: using ${near[0]} for ${name} (capitals differ).`)
       return near[0]
     }
-    errors.push(`${label}: ${name} is not among the images you picked.`)
+    errors.push(`${label}: ${name} is not among the files you picked.`)
     return null
   }
 }
@@ -317,14 +323,29 @@ function rowImages(
   }
   const thumbName = str(cell.thumbnail)
   const thumbnail = thumbName ? findFile(thumbName, 'thumbnail', errors, warnings) : null
-  return { photos, thumbnail }
+  for (const [label, name] of [...photos.map((p, i) => [`photo_${i + 1}`, p]), ['thumbnail', thumbnail]]) {
+    if (name && isVideo(name)) errors.push(`${label}: ${name} is a video. Put it in the video column.`)
+  }
+
+  const videoName = str(cell.video)
+  let video: string | null = null
+  if (videoName && !isVideo(videoName)) errors.push(`video: ${videoName} is not a video. Use an MP4.`)
+  else if (videoName) video = findFile(videoName, 'video', errors, warnings)
+  return { photos, thumbnail, video }
 }
 
-/** Every image a set of rows will need uploaded, each once. */
+/** Every file a row names: photos, grid picture, video. */
+export const filesOf = (r: ProductRow): string[] => [
+  ...r.photos,
+  ...(r.thumbnail ? [r.thumbnail] : []),
+  ...(r.video ? [r.video] : []),
+]
+
+/** Every file a set of rows will need uploaded, each once. */
 export function imagesNeeded(rows: CheckedRow[], inLibrary: (name: string) => boolean): string[] {
   const need = new Set<string>()
   for (const r of rows) {
-    for (const f of [...r.photos, ...(r.thumbnail ? [r.thumbnail] : [])]) {
+    for (const f of filesOf(r)) {
       if (!inLibrary(f)) need.add(f)
     }
   }
@@ -347,6 +368,7 @@ export function productData(row: CheckedRow, ids: Map<string, number | string>) 
     slug: row.slug,
     photos,
     thumbnail: row.thumbnail ? (ids.get(row.thumbnail) ?? null) : null,
+    video: row.video ? (ids.get(row.video) ?? null) : null,
     price: row.price,
     mrp: row.mrp,
     stock: row.stock,

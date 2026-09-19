@@ -7,6 +7,7 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Videos } from './collections/Videos'
 import { Products } from './collections/Products'
 import { Policies } from './collections/Policies'
 import { Categories } from './collections/Categories'
@@ -46,13 +47,13 @@ export default buildConfig({
           path: '/unused-photos',
           meta: {
             title: 'Unused photos',
-            description: 'Delete photos that no product uses any more.',
+            description: 'Delete photos and videos that no product uses any more.',
           },
         },
       },
     },
   },
-  collections: [Products, Categories, Media, Policies, Users],
+  collections: [Products, Categories, Media, Videos, Policies, Users],
   globals: [Settings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

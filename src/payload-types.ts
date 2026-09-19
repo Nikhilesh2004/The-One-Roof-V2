@@ -70,6 +70,7 @@ export interface Config {
     products: Product;
     categories: Category;
     media: Media;
+    videos: Video;
     policies: Policy;
     users: User;
     'payload-kv': PayloadKv;
@@ -82,6 +83,7 @@ export interface Config {
     products: ProductsSelect<false> | ProductsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    videos: VideosSelect<false> | VideosSelect<true>;
     policies: PoliciesSelect<false> | PoliciesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -147,6 +149,10 @@ export interface Product {
    * Optional. The one picture shown in the shop grid, before a customer clicks in. Leave empty to use the first photo.
    */
   thumbnail?: (number | null) | Media;
+  /**
+   * Optional. Shown second on the product page, right after the first photo, and plays by itself (silent). MP4, vertical 9:16, 15–30 seconds.
+   */
+  video?: (number | null) | Video;
   /**
    * What the customer pays. Needed before it goes live.
    */
@@ -274,6 +280,26 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * Product videos. MP4, vertical (9:16), 15–30 seconds, under 50 MB.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "videos".
+ */
+export interface Video {
+  id: number;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * The sections of the shop. Every product belongs to one. Lower order numbers come first in the menu.
@@ -422,6 +448,10 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
+        relationTo: 'videos';
+        value: number | Video;
+      } | null)
+    | ({
         relationTo: 'policies';
         value: number | Policy;
       } | null)
@@ -479,6 +509,7 @@ export interface ProductsSelect<T extends boolean = true> {
   title?: T;
   photos?: T;
   thumbnail?: T;
+  video?: T;
   price?: T;
   mrp?: T;
   stock?: T;
@@ -573,6 +604,23 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "videos_select".
+ */
+export interface VideosSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

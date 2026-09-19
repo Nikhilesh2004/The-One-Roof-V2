@@ -7,7 +7,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   checkSheet,
+  filesOf,
   imagesNeeded,
+  isVideo,
   productData,
   stemOf,
   type CheckedRow,
@@ -112,15 +114,22 @@ export function BulkUpload() {
   // ── What is already in the shop ──────────────────────────────────────
   const loadShop = useCallback(async () => {
     try {
-      const [cats, prods, media] = await Promise.all([
+      const [cats, prods, media, videos] = await Promise.all([
         api<{ docs: any[] }>('/api/categories?pagination=false&depth=0&sort=order'),
         api<{ docs: any[] }>('/api/products?pagination=false&depth=0&select[slug]=true'),
         api<{ docs: any[] }>('/api/media?pagination=false&depth=0&select[filename]=true&select[filesize]=true'),
+        api<{ docs: any[] }>('/api/videos?pagination=false&depth=0&select[filename]=true&select[filesize]=true'),
       ])
       setSections(cats.docs.map((c) => ({ id: c.id, slug: c.slug, name: c.name })))
       setExisting(new Map(prods.docs.filter((p) => p.slug).map((p) => [p.slug, p.id])))
       setLibrary(
-        new Map(media.docs.filter((m) => m.filename).map((m) => [m.filename, { id: m.id, size: m.filesize }])),
+        // Photos and videos in one lookup by filename: an .mp4 can only be a
+        // video, so a name never means both.
+        new Map(
+          [...media.docs, ...videos.docs]
+            .filter((m) => m.filename)
+            .map((m) => [m.filename, { id: m.id, size: m.filesize }]),
+        ),
       )
       setLoadError('')
     } catch (e) {
@@ -151,7 +160,7 @@ export function BulkUpload() {
     if (!list?.length) return
     setImages((prev) => {
       const next = new Map(prev)
-      for (const f of Array.from(list)) if (f.type.startsWith('image/')) next.set(f.name, f)
+      for (const f of Array.from(list)) if (/^(image|video)\//.test(f.type)) next.set(f.name, f)
       return next
     })
     setResults([])
@@ -223,7 +232,7 @@ export function BulkUpload() {
     // Each image is uploaded once, named after the first product that uses it.
     const altFor = new Map<string, string>()
     for (const r of ready) {
-      for (const f of [...r.photos, ...(r.thumbnail ? [r.thumbnail] : [])]) {
+      for (const f of filesOf(r)) {
         if (!altFor.has(f)) altFor.set(f, r.title)
       }
     }
@@ -243,8 +252,11 @@ export function BulkUpload() {
         if (!file) throw new Error('not among the images picked')
         const form = new FormData()
         form.append('file', file)
-        form.append('_payload', JSON.stringify({ alt: altFor.get(name) }))
-        const { doc } = await api<{ doc: { id: Ref } }>('/api/media', { method: 'POST', body: form })
+        if (!isVideo(name)) form.append('_payload', JSON.stringify({ alt: altFor.get(name) }))
+        const { doc } = await api<{ doc: { id: Ref } }>(isVideo(name) ? '/api/videos' : '/api/media', {
+          method: 'POST',
+          body: form,
+        })
         ids.set(name, doc.id)
       } catch (e) {
         failedImages.set(name, (e as Error).message)
@@ -256,7 +268,7 @@ export function BulkUpload() {
     setProgress({ label: 'Saving products', done: 0, total: ready.length })
 
     for (const [i, row] of ready.entries()) {
-      const missing = [...row.photos, ...(row.thumbnail ? [row.thumbnail] : [])].filter((f) =>
+      const missing = filesOf(row).filter((f) =>
         failedImages.has(f),
       )
       if (missing.length) {
@@ -343,7 +355,7 @@ export function BulkUpload() {
 
         <ImagesPick
           count={images.size}
-          hint="Every photo and thumbnail named in the sheet"
+          hint="Every photo, thumbnail and video named in the sheet"
           busy={phase === 'working'}
           onAdd={addImages}
           onClear={() => setImages(new Map())}
@@ -411,6 +423,7 @@ export function BulkUpload() {
                             <span className="tor-bu__sub">
                               {r.photos.length} photo{r.photos.length === 1 ? '' : 's'}
                               {r.thumbnail ? ' + grid picture' : ''}
+                              {r.video ? ' + video' : ''}
                             </span>
                           </td>
                           <td className="tor-bu__num">{r.price ?? '—'}</td>
@@ -544,7 +557,7 @@ export function ImagesPick({
   onClear: () => void
 }) {
   return (
-    <Pick n="2" title="The images" hint={hint} done={count ? `${count} image${count === 1 ? '' : 's'} picked` : ''}>
+    <Pick n="2" title="The images and videos" hint={hint} done={count ? `${count} file${count === 1 ? '' : 's'} picked` : ''}>
       <div
         className="tor-bu__drop"
         onDragOver={(e) => e.preventDefault()}
@@ -554,8 +567,8 @@ export function ImagesPick({
         }}
       >
         <label className="tor-bu__file">
-          <input type="file" accept="image/*" multiple onChange={(e) => onAdd(e.target.files)} disabled={busy} />
-          Choose images
+          <input type="file" accept="image/*,video/*" multiple onChange={(e) => onAdd(e.target.files)} disabled={busy} />
+          Choose files
         </label>
         <label className="tor-bu__file">
           <input

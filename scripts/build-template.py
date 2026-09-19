@@ -28,7 +28,7 @@ from openpyxl.worksheet.datavalidation import DataValidation
 
 PHOTOS = [f"photo_{i}" for i in range(1, 7)]
 HEAD = (
-    ["title"] + PHOTOS + ["thumbnail", "price", "mrp", "stock", "category",
+    ["title"] + PHOTOS + ["thumbnail", "video", "price", "mrp", "stock", "category",
     "subCategory", "description", "occasions", "countryOfOrigin", "manufacturer",
     "genericName", "netQuantity", "dimensions", "weight", "finish",
     "monthYearOfImport", "status", "featured", "shortCaption", "shortSticker",
@@ -38,7 +38,7 @@ HEAD = (
 )
 REQUIRED = {"title", "photo_1", "price", "stock", "category", "status"}
 
-WIDTH = {"title": 36, "thumbnail": 30, "description": 48, "subCategory": 20,
+WIDTH = {"title": 36, "thumbnail": 30, "video": 30, "description": 48, "subCategory": 20,
          "occasions": 22, "manufacturer": 24, "countryOfOrigin": 16,
          "genericName": 18, "netQuantity": 14, "dimensions": 16, "weight": 12,
          "finish": 20, "monthYearOfImport": 18, "shortCaption": 28,
@@ -55,6 +55,7 @@ EXAMPLES = [
     {"title": "Krishna with flute - Venugopala form",
      "photo_1": "krishna-flute-01.jpg", "photo_2": "krishna-flute-02.jpg",
      "photo_3": "krishna-flute-03.jpg", "thumbnail": "krishna-flute-thumb.jpg",
+     "video": "krishna-flute.mp4",
      "price": 3950, "mrp": 4500, "stock": 4, "category": "pooja",
      "subCategory": "Brass Idols",
      "description": "Brass Krishna standing with a flute, on a lotus base.",
@@ -93,6 +94,8 @@ GUIDE = [
     ("      photo_3   krishna-flute-03.jpg", False),
     ("", False),
     ("These are the pictures on the product's own page, in the order you list them.", False),
+    ("      - 1600 x 2000 pixels (portrait, 4:5), JPG, under 1 MB each.", False),
+    ("      - photo_1 must be clean: no price, no text. Sizes and prices go on the last photo.", False),
     ("", False),
     ("THUMBNAIL - the picture in the shop grid", True),
     ("A SEPARATE image, not one of the photos above. It is the one picture a customer sees", False),
@@ -102,8 +105,17 @@ GUIDE = [
     ("", False),
     ("      - It goes in the same folder as the photos.", False),
     ("      - Name it after the product with -thumb on the end.", False),
-    ("      - Roughly square works best. The grid crops to a square.", False),
+    ("      - 1600 x 2000 pixels, like the photos. The grid shows it at 4:5.", False),
     ("      - LEAVE IT BLANK and photo_1 is used instead. That is fine.", False),
+    ("", False),
+    ("VIDEO - optional, one per product", True),
+    ("Shown second on the product page, right after photo_1, and plays by itself (silent).", False),
+    ("", False),
+    ("      video   krishna-flute.mp4", False),
+    ("", False),
+    ("      - MP4, vertical 9:16 (1080 x 1920), 15 to 30 seconds, under 50 MB.", False),
+    ("      - Same folder as the photos. Name it after the product.", False),
+    ("      - No price or text on it, and no songs from Instagram or other apps.", False),
     ("", False),
     ("FILENAME RULES - the part nobody can fix afterwards", True),
     ("      - No spaces. Use hyphens.", False),

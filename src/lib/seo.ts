@@ -121,6 +121,18 @@ export function productSchema(product: Product, category: Category | null) {
     material: product.finish ?? undefined,
     countryOfOrigin: product.countryOfOrigin ?? undefined,
     brand: { '@type': 'Brand', name: 'The One Roof' },
+    // Lets the product show up in Google's video results.
+    subjectOf:
+      typeof product.video === 'object' && product.video?.url
+        ? {
+            '@type': 'VideoObject',
+            name: product.title,
+            description: product.description || product.title,
+            contentUrl: abs(product.video.url),
+            thumbnailUrl: abs(imageUrl(mainPhoto(product), 'card') ?? '/logo.webp'),
+            uploadDate: product.video.createdAt,
+          }
+        : undefined,
     offers: {
       '@type': 'Offer',
       url: abs(`/product/${product.slug}`),
