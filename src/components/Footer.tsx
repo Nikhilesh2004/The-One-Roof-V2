@@ -196,95 +196,77 @@ export function Footer({
         </nav>
       )}
 
-      {/* ── The maker's credit, centred, above the shop's legal line ── */}
+      {/* ── The maker's credit, centred, above the shop's line ──────────
+          Who built and who looks after the site, on one line under the
+          builder's mark. No copyright claim here, for either company: the
+          IT team's call. */}
       {settings.agencyName && (
         <div className="border-t border-[var(--line)] px-5 py-8">
           <div className="mx-auto flex max-w-[1240px] flex-col items-center gap-3 text-center">
-            {settings.madeInIndia && (
-              // The mark is a solid black silhouette, so it needs its own
-              // light ground — on the dark footer it would otherwise be an
-              // invisible rectangle.
-              <span className="inline-flex rounded-md bg-white px-4 py-2.5">
-                <Image
-                  src="/made-in-india.webp"
-                  alt="Make in India"
-                  width={420}
-                  height={192}
-                  sizes="120px"
-                  className="h-auto w-[120px]"
-                />
+            <Credit url={settings.agencyUrl} label={settings.agencyName}>
+              <Image
+                src="/aalitech-mark.webp"
+                alt={settings.agencyName}
+                width={320}
+                height={284}
+                sizes="48px"
+                className="h-auto w-12"
+              />
+            </Credit>
+
+            <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[13px] tracking-[0.04em] text-[var(--ink-2)]">
+              <span>
+                {settings.agencyCredit}{' '}
+                <Credit url={settings.agencyUrl} label={settings.agencyName} bold>
+                  {settings.agencyName}
+                </Credit>
               </span>
-            )}
-
-            <p className="text-[13px] tracking-[0.04em] text-[var(--ink-2)]">
-              © Copy Rights by{' '}
-              {settings.agencyUrl ? (
-                <a
-                  href={settings.agencyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold transition-colors hover:text-[var(--brass)]"
-                >
-                  {settings.agencyName}
-                </a>
-              ) : (
-                <span className="font-semibold">{settings.agencyName}</span>
-              )}
-            </p>
-
-            <p className="text-[13px] tracking-[0.04em] text-[var(--ink-2)]">
-              {settings.agencyCredit}{' '}
-              {settings.agencyUrl ? (
-                <a
-                  href={settings.agencyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold transition-colors hover:text-[var(--brass)]"
-                >
-                  {settings.agencyName}
-                </a>
-              ) : (
-                <span className="font-semibold">{settings.agencyName}</span>
-              )}
-            </p>
-
-            {/*
-              The shop is built by one company and looked after by another, so
-              the ampersand only earns its line when there really is a second
-              name to join. With the maintainer cleared, this collapses back to
-              a single credit rather than leaving a stranded "&".
-            */}
-            {settings.maintainerName && (
-              <>
-                <p className="text-[13px] tracking-[0.04em] text-[var(--ink-2)]">&amp;</p>
-
-                <p className="text-[13px] tracking-[0.04em] text-[var(--ink-2)]">
-                  {settings.maintainerCredit}{' '}
-                  {settings.maintainerUrl ? (
-                    <a
-                      href={settings.maintainerUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-semibold transition-colors hover:text-[var(--brass)]"
-                    >
+              {/* The second name is optional; with it cleared, one credit and no stray dot. */}
+              {settings.maintainerName && (
+                <>
+                  <span aria-hidden="true" className="text-[var(--muted)]">
+                    ·
+                  </span>
+                  <span>
+                    {settings.maintainerCredit}{' '}
+                    <Credit url={settings.maintainerUrl} label={settings.maintainerName} bold>
                       {settings.maintainerName}
-                    </a>
-                  ) : (
-                    <span className="font-semibold">{settings.maintainerName}</span>
-                  )}
-                </p>
-              </>
-            )}
+                    </Credit>
+                  </span>
+                </>
+              )}
+            </p>
           </div>
         </div>
       )}
       <div className="border-t border-[var(--line)] px-5 py-6">
         <p className="mx-auto max-w-[1240px] text-center text-[11.5px] leading-relaxed text-[var(--muted)]">
-          © {new Date().getFullYear()} The One Roof, Guntur. Wholesale &amp; retail. Prices include
+          The One Roof, Guntur. Wholesale &amp; retail. Prices include
           all taxes. This site takes no payments — every order is confirmed on WhatsApp and paid at
           the shop or on delivery.
         </p>
       </div>
     </footer>
+  )
+}
+
+/** A credit name: a link when the settings give one, plain text otherwise. */
+function Credit({
+  url,
+  label,
+  bold,
+  children,
+}: {
+  url?: string | null
+  label: string
+  bold?: boolean
+  children: React.ReactNode
+}) {
+  const cls = `${bold ? 'font-semibold ' : ''}transition-colors hover:text-[var(--brass)]`
+  if (!url) return <span className={bold ? 'font-semibold' : undefined}>{children}</span>
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer" aria-label={bold ? undefined : label} className={cls}>
+      {children}
+    </a>
   )
 }

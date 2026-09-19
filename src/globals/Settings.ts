@@ -144,6 +144,9 @@ export const Settings: GlobalConfig = {
               defaultValue: false,
               label: 'Show the Made in India badge',
               admin: {
+                // No longer drawn: the footer now carries the builder's mark
+                // instead, and the lion is a protected mark in any case.
+                hidden: true,
                 description:
                   'Off until the image file is in place at /public/made-in-india.png. The Government of India’s own "Make in India" lion is a protected mark and needs DPIIT permission — a plain "Made in India" badge does not.',
               },
