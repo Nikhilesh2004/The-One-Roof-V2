@@ -62,7 +62,7 @@ export const Products: CollectionConfig = {
   labels: { singular: 'Product', plural: 'Products' },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['photos', 'title', 'status', 'category', 'price', 'stock'],
+    defaultColumns: ['photos', 'title', 'actions', 'status', 'category', 'price', 'stock'],
     group: 'Shop',
     description: 'Everything the shop sells. Click a product to change its photos, price or stock.',
     listSearchableFields: ['title', 'slug', 'description'],
@@ -70,6 +70,14 @@ export const Products: CollectionConfig = {
   access: { read: publicRead, create: editorsOnly, update: editorsOnly, delete: editorsOnly },
   defaultSort: 'title',
   fields: [
+    // View / Edit / Delete on every row of the list. A column only — it
+    // stores nothing and shows nothing on the product's own page.
+    {
+      name: 'actions',
+      type: 'ui',
+      label: 'Actions',
+      admin: { components: { Cell: '/components/admin/RowActions#RowActions' } },
+    },
     {
       type: 'tabs',
       tabs: [

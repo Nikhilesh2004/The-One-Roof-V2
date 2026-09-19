@@ -103,13 +103,16 @@ export function Header({ categories, settings }: { categories: Category[]; setti
             The One&nbsp;<em className="text-[var(--brass)] not-italic">Roof</em>
           </Link>
 
-          <nav aria-label="Sections" className="hidden min-w-0 flex-1 md:block">
-            <ul className="flex flex-wrap items-center gap-x-5 gap-y-1">
+          {/* One line, always. Below ~1024px nine sections cannot fit beside the
+              logo and icons and used to break onto a second row, so tablets and
+              small laptops get the menu button instead, as phones do. */}
+          <nav aria-label="Sections" className="hidden min-w-0 flex-1 lg:block">
+            <ul className="flex flex-nowrap items-center gap-x-3.5 xl:gap-x-5">
               {navItems.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-[11.5px] font-medium tracking-[0.13em] text-[var(--ink-2)] uppercase transition-colors hover:text-[var(--ink)]"
+                    className="text-[11.5px] font-medium tracking-[0.1em] whitespace-nowrap text-[var(--ink-2)] uppercase transition-colors hover:text-[var(--ink)] xl:tracking-[0.13em]"
                   >
                     {item.label}
                   </Link>

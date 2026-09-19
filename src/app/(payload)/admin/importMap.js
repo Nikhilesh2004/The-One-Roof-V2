@@ -1,3 +1,4 @@
+import { RowActions as RowActions_4ac536b05bcf7dd66a6c577ab1ace490 } from '../../../components/admin/RowActions'
 import { PhotosCell as PhotosCell_9272fada82f3e0824879211d1bfa760e } from '../../../components/admin/PhotosCell'
 import { CategorySelect as CategorySelect_f5d61ae9fa815935ece61429ca63beca } from '../../../components/admin/CategorySelect'
 import { Icon as Icon_dfe4008080d895d460898c3a6155e9ba } from '../../../components/admin/Icon'
@@ -10,6 +11,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "/components/admin/RowActions#RowActions": RowActions_4ac536b05bcf7dd66a6c577ab1ace490,
   "/components/admin/PhotosCell#PhotosCell": PhotosCell_9272fada82f3e0824879211d1bfa760e,
   "/components/admin/CategorySelect#CategorySelect": CategorySelect_f5d61ae9fa815935ece61429ca63beca,
   "/components/admin/Icon#Icon": Icon_dfe4008080d895d460898c3a6155e9ba,

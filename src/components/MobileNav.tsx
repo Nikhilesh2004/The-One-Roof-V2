@@ -29,7 +29,7 @@ export function MobileNav({ items }: { items: Item[] }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="grid h-10 w-10 place-items-center rounded-full text-[var(--ink-2)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--ink)] md:hidden"
+        className="grid h-10 w-10 place-items-center rounded-full text-[var(--ink-2)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--ink)] lg:hidden"
         aria-label={open ? 'Close menu' : 'Open menu'}
         aria-expanded={open}
       >
@@ -39,7 +39,7 @@ export function MobileNav({ items }: { items: Item[] }) {
       {open && (
         <nav
           aria-label="Sections"
-          className="absolute inset-x-0 top-full border-b border-[var(--line)] bg-[var(--surface)] md:hidden"
+          className="absolute inset-x-0 top-full border-b border-[var(--line)] bg-[var(--surface)] lg:hidden"
         >
           <ul className="mx-auto max-w-[1240px] px-5 py-2">
             {items.map((item) => (
