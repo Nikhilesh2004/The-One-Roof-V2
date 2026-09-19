@@ -43,15 +43,15 @@ export async function ShopNav() {
       `}</style>
 
       <Step href="/admin/bulk-upload" n="1" title="Bulk upload" hint="Add or update many products from Excel" />
-      <Step href="/admin/replace-photos" n="2" title="Replace photos" hint="New photos for products already on the site" />
       <Step
         href="/admin/collections/products?where[status][equals]=draft"
-        n="3"
+        n="2"
         title="Finish drafts"
         hint="Products not on the website yet"
         badge={drafts || undefined}
       />
-      <Step href="/admin/collections/products" n="4" title="All products" hint="Edit one, or filter by section" />
+      <Step href="/admin/collections/products" n="3" title="All products" hint="Edit one, or filter by section" />
+      <Step href="/admin/unused-photos" n="4" title="Unused photos" hint="Delete photos no product uses" />
 
       <Link href="/admin/logout" className="tor-nav__logout">
         Log out

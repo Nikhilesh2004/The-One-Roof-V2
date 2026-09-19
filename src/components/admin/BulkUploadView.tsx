@@ -5,10 +5,10 @@ import type { AdminViewServerProps } from 'payload'
 import React from 'react'
 
 import { BulkUpload } from './BulkUpload'
-import { ReplacePhotos } from './ReplacePhotos'
+import { UnusedPhotos } from './UnusedPhotos'
 
 /**
- * /admin/bulk-upload and /admin/replace-photos, inside the CMS's own frame so
+ * /admin/bulk-upload and /admin/unused-photos, inside the CMS's own frame so
  * the menu stays put.
  *
  * A custom view renders bare unless it is wrapped in DefaultTemplate; the
@@ -39,6 +39,6 @@ function inFrame(path: string, page: React.ReactNode) {
 }
 
 export const BulkUploadView = inFrame('/bulk-upload', <BulkUpload />)
-export const ReplacePhotosView = inFrame('/replace-photos', <ReplacePhotos />)
+export const UnusedPhotosView = inFrame('/unused-photos', <UnusedPhotos />)
 
 export default BulkUploadView
