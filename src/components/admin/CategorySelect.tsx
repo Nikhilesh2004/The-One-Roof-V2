@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { FieldLabel, useField, useFormFields } from '@payloadcms/ui'
+import React, { useEffect, useState, type ChangeEvent } from 'react'
+import { SelectInput, TextInput, useField, useFormFields } from '@payloadcms/ui'
 import type { TextFieldClientComponent } from 'payload'
 
 /**
@@ -14,6 +14,10 @@ import type { TextFieldClientComponent } from 'payload'
  *
  * The list lives on the Section itself (Sections → Categories), so adding a
  * new kind of thing is done there and appears here, with no code change.
+ *
+ * It is drawn with Payload's own SelectInput and TextInput rather than a
+ * bare <select>: an unstyled browser dropdown sat in the form as a small
+ * grey box, nothing like the Section field right above it.
  *
  * The stored value is still plain text, which is what keeps this safe to
  * introduce: the 25 products that already carry a category keep working, and
@@ -71,33 +75,40 @@ export const CategorySelect: TextFieldClientComponent = ({ field, path }) => {
 
   const orphaned = Boolean(value) && options.length > 0 && !options.includes(value)
 
+  const name = path.split('.').pop() ?? 'subCategory'
+  const asText =
+    state === 'failed' || (!sectionId && !value) || (Boolean(sectionId) && options.length === 0)
+
   return (
     <div className="field-type text">
-      <FieldLabel htmlFor={`field-${path}`} label={label} />
-
-      {state === 'failed' || (!sectionId && !value) || (Boolean(sectionId) && options.length === 0) ? (
-        <input
-          id={`field-${path}`}
-          type="text"
+      {asText ? (
+        <TextInput
+          path={path}
+          label={label}
           value={value ?? ''}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
           placeholder={sectionId ? 'e.g. Wall Clocks' : 'Choose a Section first'}
         />
       ) : (
-        <select
-          id={`field-${path}`}
+        <SelectInput
+          name={name}
+          path={path}
+          label={label}
+          isClearable
+          readOnly={state === 'loading'}
+          placeholder={state === 'loading' ? 'Loading…' : 'Choose one'}
           value={value ?? ''}
-          onChange={(e) => setValue(e.target.value || null)}
-          disabled={state === 'loading'}
-        >
-          <option value="">— none —</option>
-          {orphaned && <option value={value}>{value} (no longer in this section)</option>}
-          {options.map((o) => (
-            <option key={o} value={o}>
-              {o}
-            </option>
-          ))}
-        </select>
+          options={[
+            // A value the section no longer offers is kept and labelled, not
+            // dropped on the next save.
+            ...(orphaned ? [{ label: `${value} (no longer in this section)`, value }] : []),
+            ...options.map((o) => ({ label: o, value: o })),
+          ]}
+          onChange={(option) => {
+            const picked = Array.isArray(option) ? option[0] : option
+            setValue((picked?.value as string) || null)
+          }}
+        />
       )}
 
       {description && <div className="field-description">{description}</div>}

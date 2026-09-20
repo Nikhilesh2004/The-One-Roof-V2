@@ -55,6 +55,15 @@ export function ShortsRail({ items, speed }: { items: ShortCard[]; speed?: numbe
   const box = useRef<HTMLDivElement>(null)
   const track = useRef<HTMLDivElement>(null)
   const [copies, setCopies] = useState(2)
+  /*
+   * Whether there is anything to loop at all.
+   *
+   * With one featured product the rail still repeated it and crept along, so
+   * the same lamp slid past three times over — which reads as a fault, not a
+   * rail. When a single pass already fits on the screen there is nothing to
+   * scroll to: the tiles sit still, centred, shown once.
+   */
+  const [loop, setLoop] = useState(true)
 
   useEffect(() => {
     if (!items.length) return
@@ -75,6 +84,16 @@ export function ShortsRail({ items, speed }: { items: ShortCard[]; speed?: numbe
       // to be wide enough to keep the window full for the whole travel:
       // total >= 2 x viewport. Copies must stay even, or "half the track"
       // no longer lands on a seam between passes.
+      if (one <= outer.clientWidth + 1) {
+        if (loop) setLoop(false)
+        if (copies !== 1) setCopies(1)
+        return
+      }
+      if (!loop) {
+        setLoop(true)
+        return
+      }
+
       const needed = Math.ceil((outer.clientWidth * 2) / one)
       const wanted = Math.max(2, needed + (needed % 2))
       if (wanted !== copies) {
@@ -91,7 +110,7 @@ export function ShortsRail({ items, speed }: { items: ShortCard[]; speed?: numbe
     if (box.current) observer.observe(box.current)
     if (track.current) observer.observe(track.current)
     return () => observer.disconnect()
-  }, [items.length, copies, SPEED])
+  }, [items.length, copies, loop, SPEED])
 
   /*
    * The drift, and the reason a swipe works at all.
@@ -104,7 +123,7 @@ export function ShortsRail({ items, speed }: { items: ShortCard[]; speed?: numbe
   useEffect(() => {
     const outer = box.current
     const inner = track.current
-    if (!outer || !inner || !items.length) return
+    if (!outer || !inner || !items.length || !loop) return
 
     const stillness = window.matchMedia('(prefers-reduced-motion: reduce)')
     let frame = 0
@@ -191,7 +210,7 @@ export function ShortsRail({ items, speed }: { items: ShortCard[]; speed?: numbe
       outer.removeEventListener('mousemove', onEnter)
       outer.removeEventListener('focusin', onDown)
     }
-  }, [SPEED, items.length, copies])
+  }, [SPEED, items.length, copies, loop])
 
   if (!items.length) return null
 
@@ -205,7 +224,7 @@ export function ShortsRail({ items, speed }: { items: ShortCard[]; speed?: numbe
       role="group"
       aria-label="Shoppable Shorts"
     >
-      <div className="marquee-track" ref={track}>
+      <div className={`marquee-track${loop ? '' : ' justify-center'}`} ref={track}>
         {Array.from({ length: copies }).map((_, copy) =>
           items.map((item) => (
             <ShortTile
