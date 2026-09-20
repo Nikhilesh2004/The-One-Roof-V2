@@ -198,11 +198,27 @@ export function Footer({
 
       {/* ── The maker's credit, centred, above the shop's line ──────────
           Who built and who looks after the site, on one line under the
-          builder's mark. No copyright claim here, for either company: the
-          IT team's call. */}
+          builder's mark. No copyright line here: the copyright below is the
+          shop's, and the team's rule is one owner, not two. */}
       {settings.agencyName && (
         <div className="border-t border-[var(--line)] px-5 py-8">
           <div className="mx-auto flex max-w-[1240px] flex-col items-center gap-3 text-center">
+            {settings.madeInIndia && (
+              // The mark is a solid black silhouette, so it needs its own
+              // light ground — on the dark footer it would otherwise be an
+              // invisible rectangle.
+              <span className="inline-flex rounded-md bg-white px-4 py-2.5">
+                <Image
+                  src="/made-in-india.webp"
+                  alt="Make in India"
+                  width={420}
+                  height={192}
+                  sizes="120px"
+                  className="h-auto w-[120px]"
+                />
+              </span>
+            )}
+
             <Credit url={settings.agencyUrl} label={settings.agencyName}>
               <Image
                 src="/aalitech-mark.png"
@@ -241,7 +257,7 @@ export function Footer({
       )}
       <div className="border-t border-[var(--line)] px-5 py-6">
         <p className="mx-auto max-w-[1240px] text-center text-[11.5px] leading-relaxed text-[var(--muted)]">
-          The One Roof, Guntur. Wholesale &amp; retail. Prices include
+          © {new Date().getFullYear()} The One Roof, Guntur. Wholesale &amp; retail. Prices include
           all taxes. This site takes no payments — every order is confirmed on WhatsApp and paid at
           the shop or on delivery.
         </p>
