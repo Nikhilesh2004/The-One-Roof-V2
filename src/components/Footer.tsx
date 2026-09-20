@@ -200,34 +200,25 @@ export function Footer({
           Who built and who looks after the site, on one line under the
           builder's mark. No copyright line here: the copyright below is the
           shop's, and the team's rule is one owner, not two. */}
-      {/* ── The shop's own band: where the goods come from, and whose shop
-          this is. Both are the shop speaking, so they belong together and
-          above the line that separates them from the builder's credit. */}
-      <div className="border-t border-[var(--line)] px-5 py-8">
-        <div className="mx-auto flex max-w-[1240px] flex-col items-center gap-4 text-center">
-          {settings.madeInIndia && (
-            // The mark is a solid black silhouette, so it needs its own light
-            // ground — on the dark footer it would otherwise be an invisible
-            // rectangle.
-            <span className="inline-flex rounded-md bg-white px-4 py-2.5">
-              <Image
-                src="/made-in-india.webp"
-                alt="Make in India"
-                width={420}
-                height={192}
-                sizes="120px"
-                className="h-auto w-[120px]"
-              />
-            </span>
-          )}
-
-          <p className="text-[11.5px] leading-relaxed text-[var(--muted)]">
-            © {new Date().getFullYear()} The One Roof, Guntur. Wholesale &amp; retail. Prices
-            include all taxes. This site takes no payments — every order is confirmed on WhatsApp
-            and paid at the shop or on delivery.
-          </p>
+      {settings.madeInIndia && (
+        // Its own band, ruled off from the credits below: where the shop's
+        // goods come from is the shop's statement, not the builder's.
+        // The mark is a solid black silhouette, so it needs its own light
+        // ground — on the dark footer it would otherwise be an invisible
+        // rectangle.
+        <div className="border-t border-[var(--line)] px-5 py-8 text-center">
+          <span className="inline-flex rounded-md bg-white px-4 py-2.5">
+            <Image
+              src="/made-in-india.webp"
+              alt="Make in India"
+              width={420}
+              height={192}
+              sizes="120px"
+              className="h-auto w-[120px]"
+            />
+          </span>
         </div>
-      </div>
+      )}
 
       {settings.agencyName && (
         <div className="border-t border-[var(--line)] px-5 py-8">
@@ -268,6 +259,13 @@ export function Footer({
           </div>
         </div>
       )}
+      <div className="border-t border-[var(--line)] px-5 py-6">
+        <p className="mx-auto max-w-[1240px] text-center text-[11.5px] leading-relaxed text-[var(--muted)]">
+          © {new Date().getFullYear()} The One Roof, Guntur. Wholesale &amp; retail. Prices include
+          all taxes. This site takes no payments — every order is confirmed on WhatsApp and paid at
+          the shop or on delivery.
+        </p>
+      </div>
     </footer>
   )
 }
