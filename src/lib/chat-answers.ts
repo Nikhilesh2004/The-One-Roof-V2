@@ -126,6 +126,9 @@ const INTENTS: { keys: string[]; reply: (s: ChatShop) => string | null }[] = [
         const fee = typeof s.deliveryFee === 'number' && s.deliveryFee > 0 ? ` Below that it is ₹${s.deliveryFee}.` : ''
         return `Delivery is free on orders over ₹${s.freeDeliveryOver.toLocaleString('en-IN')}.${fee} Tell us where you are on WhatsApp and we will confirm.`
       }
+      if (typeof s.deliveryFee === 'number' && s.deliveryFee > 0) {
+        return `Delivery is ₹${s.deliveryFee}. Tell us where you are on WhatsApp and we will confirm.`
+      }
       return null
     },
   },

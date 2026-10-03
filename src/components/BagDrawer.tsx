@@ -25,7 +25,10 @@ export function BagDrawer({ whatsappNumber, deliveryFee, freeDeliveryOver, deliv
   const panel = useRef<HTMLDivElement>(null)
   const closeButton = useRef<HTMLButtonElement>(null)
 
-  const delivery = subtotal >= freeDeliveryOver || subtotal === 0 ? 0 : deliveryFee
+  // 0 means the shop runs no free-delivery offer, not that every order ships
+  // free: a threshold of 0 used to waive the charge on everything.
+  const freeOver = freeDeliveryOver > 0 && subtotal >= freeDeliveryOver
+  const delivery = subtotal === 0 || freeOver ? 0 : deliveryFee
   const total = subtotal + delivery
 
   useEffect(() => {

@@ -224,7 +224,10 @@ export const Settings: GlobalConfig = {
               defaultValue: 999,
               min: 0,
               label: 'Free delivery above (₹)',
-              admin: { description: 'Set to 0 to make delivery free on everything.' },
+              admin: {
+                description:
+                  'Set to 0 for no free-delivery offer: the delivery charge then applies to every order. To make delivery free on everything, set the delivery charge to 0 instead.',
+              },
             },
             {
               name: 'deliveryNote',
