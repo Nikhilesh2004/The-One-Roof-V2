@@ -163,7 +163,6 @@ export const Settings: GlobalConfig = {
             {
               name: 'announcement',
               type: 'text',
-              defaultValue: 'Free delivery over ₹999',
               label: 'Strip across the very top',
               admin: { description: 'Leave blank to hide that strip entirely.' },
             },
@@ -209,26 +208,10 @@ export const Settings: GlobalConfig = {
           ],
         },
         {
-          label: 'Delivery',
+          // The shop quotes no delivery charge on the site: no fee, no
+          // free-delivery threshold. Only the note under the button is left.
+          label: 'Bag',
           fields: [
-            {
-              name: 'deliveryFee',
-              type: 'number',
-              defaultValue: 59,
-              min: 0,
-              label: 'Delivery charge (₹)',
-            },
-            {
-              name: 'freeDeliveryOver',
-              type: 'number',
-              defaultValue: 999,
-              min: 0,
-              label: 'Free delivery above (₹)',
-              admin: {
-                description:
-                  'Set to 0 for no free-delivery offer: the delivery charge then applies to every order. To make delivery free on everything, set the delivery charge to 0 instead.',
-              },
-            },
             {
               name: 'deliveryNote',
               type: 'textarea',

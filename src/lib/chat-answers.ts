@@ -21,8 +21,6 @@ export type ChatShop = {
   phone?: string | null
   email?: string | null
   gstin?: string | null
-  freeDeliveryOver?: number | null
-  deliveryFee?: number | null
 }
 
 export type ChatReply = {
@@ -118,19 +116,6 @@ const INTENTS: { keys: string[]; reply: (s: ChatShop) => string | null }[] = [
     keys: ['phone', 'number', 'call', 'contact', 'whatsapp', 'mobile'],
     reply: (s) =>
       s.phone ? `You can reach us on ${s.phone}${s.email ? `, or email ${s.email}` : ''}.` : null,
-  },
-  {
-    keys: ['delivery', 'deliver', 'shipping', 'ship', 'courier', 'free'],
-    reply: (s) => {
-      if (typeof s.freeDeliveryOver === 'number' && s.freeDeliveryOver > 0) {
-        const fee = typeof s.deliveryFee === 'number' && s.deliveryFee > 0 ? ` Below that it is ₹${s.deliveryFee}.` : ''
-        return `Delivery is free on orders over ₹${s.freeDeliveryOver.toLocaleString('en-IN')}.${fee} Tell us where you are on WhatsApp and we will confirm.`
-      }
-      if (typeof s.deliveryFee === 'number' && s.deliveryFee > 0) {
-        return `Delivery is ₹${s.deliveryFee}. Tell us where you are on WhatsApp and we will confirm.`
-      }
-      return null
-    },
   },
   {
     keys: ['pay', 'payment', 'card', 'upi', 'online', 'cod', 'cash', 'checkout', 'buy'],

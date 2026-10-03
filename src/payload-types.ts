@@ -781,11 +781,6 @@ export interface Setting {
    */
   shortsSpeed?: number | null;
   aboutText?: string | null;
-  deliveryFee?: number | null;
-  /**
-   * Set to 0 to make delivery free on everything.
-   */
-  freeDeliveryOver?: number | null;
   deliveryNote?: string | null;
   /**
    * Shown on the home page and the contact page.
@@ -836,8 +831,6 @@ export interface SettingsSelect<T extends boolean = true> {
   subscriberCount?: T;
   shortsSpeed?: T;
   aboutText?: T;
-  deliveryFee?: T;
-  freeDeliveryOver?: T;
   deliveryNote?: T;
   faqs?:
     | T

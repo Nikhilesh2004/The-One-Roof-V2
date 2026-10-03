@@ -10,8 +10,6 @@ import { BagIcon, CheckIcon, CloseIcon, WhatsAppIcon } from './Icons'
 
 type Props = {
   whatsappNumber: string
-  deliveryFee: number
-  freeDeliveryOver: number
   deliveryNote: string
 }
 
@@ -20,16 +18,14 @@ type Props = {
  * with every line item in it. No payment step exists, so nothing here
  * pretends one is coming.
  */
-export function BagDrawer({ whatsappNumber, deliveryFee, freeDeliveryOver, deliveryNote }: Props) {
+export function BagDrawer({ whatsappNumber, deliveryNote }: Props) {
   const { lines, count, subtotal, mrpTotal, saved, setQty, remove, isOpen, setOpen } = useBag()
   const panel = useRef<HTMLDivElement>(null)
   const closeButton = useRef<HTMLButtonElement>(null)
 
-  // 0 means the shop runs no free-delivery offer, not that every order ships
-  // free: a threshold of 0 used to waive the charge on everything.
-  const freeOver = freeDeliveryOver > 0 && subtotal >= freeDeliveryOver
-  const delivery = subtotal === 0 || freeOver ? 0 : deliveryFee
-  const total = subtotal + delivery
+  // No delivery line: the shop quotes delivery, if any, on WhatsApp, so the
+  // bag shows the goods alone and never promises a charge or a free one.
+  const total = subtotal
 
   useEffect(() => {
     if (!isOpen) return
@@ -197,12 +193,6 @@ export function BagDrawer({ whatsappNumber, deliveryFee, freeDeliveryOver, deliv
                 <dt className="text-[var(--ink-2)]">Discount</dt>
                 <dd className="text-[var(--ok)]">− {rupees(saved)}</dd>
               </div>
-              <div className="flex justify-between">
-                <dt className="text-[var(--ink-2)]">Delivery</dt>
-                <dd className={delivery === 0 ? 'text-[var(--ok)]' : ''}>
-                  {delivery === 0 ? 'Free' : rupees(delivery)}
-                </dd>
-              </div>
               <div className="flex items-baseline justify-between border-t border-[var(--line)] pt-3 text-base font-semibold">
                 <dt>Total</dt>
                 <dd className="text-[var(--brass)]">{rupees(total)}</dd>
@@ -213,7 +203,7 @@ export function BagDrawer({ whatsappNumber, deliveryFee, freeDeliveryOver, deliv
               <span className="mt-0.5 flex-none text-[var(--ok)]">
                 <CheckIcon size={13} />
               </span>
-              One consolidated figure, inclusive of all taxes and delivery.
+              One consolidated figure, inclusive of all taxes.
             </p>
 
             <a

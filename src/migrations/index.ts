@@ -6,6 +6,7 @@ import * as migration_20260906_161940_maintainer_credit from './20260906_161940_
 import * as migration_20260906_180425_gstin_and_grievance from './20260906_180425_gstin_and_grievance';
 import * as migration_20260918_052819_product_grid_picture from './20260918_052819_product_grid_picture';
 import * as migration_20260919_173225_product_video from './20260919_173225_product_video';
+import * as migration_20261003_063718_remove_delivery_charges from './20261003_063718_remove_delivery_charges';
 
 export const migrations = [
   {
@@ -46,6 +47,11 @@ export const migrations = [
   {
     up: migration_20260919_173225_product_video.up,
     down: migration_20260919_173225_product_video.down,
-    name: '20260919_173225_product_video'
+    name: '20260919_173225_product_video',
+  },
+  {
+    up: migration_20261003_063718_remove_delivery_charges.up,
+    down: migration_20261003_063718_remove_delivery_charges.down,
+    name: '20261003_063718_remove_delivery_charges'
   },
 ];

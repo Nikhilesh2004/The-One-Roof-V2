@@ -110,8 +110,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Footer categories={categories} settings={settings} policies={policies} />
             <BagDrawer
               whatsappNumber={settings.whatsappNumber}
-              deliveryFee={settings.deliveryFee ?? 0}
-              freeDeliveryOver={settings.freeDeliveryOver ?? 0}
               deliveryNote={settings.deliveryNote ?? ''}
             />
             {/* Answers from the owner's own FAQs, then hands over to
@@ -139,8 +137,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 phone: settings.displayPhone,
                 email: settings.email,
                 gstin: settings.gstin,
-                freeDeliveryOver: settings.freeDeliveryOver,
-                deliveryFee: settings.deliveryFee,
               }}
             />
           </BagProvider>
